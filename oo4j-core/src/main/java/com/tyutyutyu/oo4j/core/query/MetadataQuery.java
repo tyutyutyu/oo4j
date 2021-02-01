@@ -13,7 +13,7 @@ import java.util.*;
 @Slf4j
 public class MetadataQuery {
 
-    private static final String OWNER_KEY = "OWNER";
+    private static final String OWNER_KEY = "owner";
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
 
