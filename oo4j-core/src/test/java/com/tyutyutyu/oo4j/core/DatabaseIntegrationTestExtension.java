@@ -21,6 +21,9 @@ public class DatabaseIntegrationTestExtension implements BeforeAllCallback, Afte
 
     @Override
     public void beforeAll(ExtensionContext context) {
+
+        System.setProperty("oracle.jdbc.timezoneAsRegion", "false");
+
         oracle = new OracleContainer("oracleinanutshell/oracle-xe-11g")
                 .withStartupTimeoutSeconds(900)
                 .withConnectTimeoutSeconds(900);
