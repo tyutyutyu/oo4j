@@ -17,7 +17,11 @@ public class OracleProcedureRowMapper implements RowMapper<OracleProcedure> {
                 schema,
                 rs.getString("OBJECT_NAME"),
                 rs.getString("PROCEDURE_NAME"),
-                rs.getString("OBJECT_TYPE")
+                rs.getString("OBJECT_TYPE"),
+                rs.getInt("SUBPROGRAM_ID"),
+                rs.getObject("OVERLOAD") == null
+                        ? null
+                        : rs.getInt("OVERLOAD")
         );
     }
 

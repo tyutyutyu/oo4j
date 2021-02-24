@@ -1,5 +1,6 @@
 package com.tyutyutyu.oo4j.core;
 
+import com.tyutyutyu.oo4j.core.javalang.JavaClass;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
@@ -10,7 +11,7 @@ import lombok.ToString;
 public class JavaTypeField {
 
     private final String name;
-    private final String className;
-    private final String simpleClassName;
+    private final JavaClass javaClass;
+    private final boolean custom;
 
 }

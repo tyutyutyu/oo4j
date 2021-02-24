@@ -63,6 +63,8 @@ public class DatabaseIntegrationTestExtension implements BeforeAllCallback, Afte
         loadFile(jdbcTemplate, "01_init_schema.sql", true);
         loadFile(jdbcTemplate, "02_create_type.sql", true);
         loadFile(jdbcTemplate, "05_create_procedure.sql", false);
+        loadFile(jdbcTemplate, "06_create_package_spec.sql", false);
+        loadFile(jdbcTemplate, "07_create_package_body.sql", false);
     }
 
     private static void loadFile(JdbcTemplate jdbcTemplate, String file, boolean split) throws IOException {

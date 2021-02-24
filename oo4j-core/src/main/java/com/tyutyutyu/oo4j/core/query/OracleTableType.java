@@ -5,17 +5,21 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
+import java.sql.JDBCType;
+
 @EqualsAndHashCode
 @Getter
 @RequiredArgsConstructor
 @ToString
-public class OracleProcedure {
+public class OracleTableType implements OracleComplexType {
 
     private final String schema;
-    private final String objectName;
-    private final String procedureName;
-    private final String objectType;
-    private final int subprogramId;
-    private final Integer overload;
+    private final String name;
+    private final String componentTypeName;
+
+    @Override
+    public JDBCType getJdbcType() {
+        return JDBCType.ARRAY;
+    }
 
 }

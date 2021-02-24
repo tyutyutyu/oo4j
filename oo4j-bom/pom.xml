@@ -20,6 +20,7 @@
         <lombok.version>1.18.18</lombok.version>
         <mockito.version>3.7.7</mockito.version>
         <ojdbc10.version>19.9.0.0</ojdbc10.version>
+        <picocli.version>4.6.1</picocli.version>
         <slf4j.version>1.7.30</slf4j.version>
         <spring.version>5.3.3</spring.version>
         <testcontainers.version>1.15.1</testcontainers.version>
@@ -41,6 +42,11 @@
                 <groupId>com.oracle.database.nls</groupId>
                 <artifactId>orai18n</artifactId>
                 <version>${ojdbc10.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>info.picocli</groupId>
+                <artifactId>picocli</artifactId>
+                <version>${picocli.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.logging.log4j</groupId>

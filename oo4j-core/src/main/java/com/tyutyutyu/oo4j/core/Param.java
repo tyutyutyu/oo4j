@@ -1,5 +1,6 @@
 package com.tyutyutyu.oo4j.core;
 
+import com.tyutyutyu.oo4j.core.javalang.JavaClass;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
@@ -9,12 +10,26 @@ import lombok.ToString;
 @ToString
 public class Param {
 
-    private final String javaType;
-    private final String javaSimpleType;
-    private final String setterJavaSimpleType;
+    private final JavaClass javaClass;
     private final String javaName;
     private final String name;
-    private final String sqlType;
+    private final String jdbcType;
     private final boolean custom;
+    private final String rowMapperType;
+    private final String oracleTypeName;
+    private final String genericType;
+
+    public String getDeclarationType() {
+        if (javaClass.getContainerType() == JavaClass.ContainerType.LIST) {
+            if (rowMapperType != null) {
+                return "List<" + rowMapperType + ">";
+            } else {
+                return "List<" + genericType + ">";
+            }
+        } else {
+            return javaClass.getClassName();
+        }
+    }
+
 
 }

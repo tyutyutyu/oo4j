@@ -1,16 +1,23 @@
 package com.tyutyutyu.oo4j.core;
 
 import com.google.common.base.CaseFormat;
+import com.tyutyutyu.oo4j.core.query.OracleBasicType;
 import com.tyutyutyu.oo4j.core.query.OracleProcedure;
+import com.tyutyutyu.oo4j.core.query.OracleType;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 public class DefaultNamingStrategy implements NamingStrategy {
 
+    private static final String PACKAGE_NAME_REPLACE_REGEX = "[_\\-]";
+
     private final String basePackage;
 
     @Override
     public String oracleTypeNameToJavaClassName(String oracleTypeName) {
+        if (OracleType.isBasicType(oracleTypeName)) {
+            return OracleBasicType.valueOf(oracleTypeName).getJavaClass().getClassName();
+        }
         return CaseFormat.UPPER_UNDERSCORE.to(CaseFormat.UPPER_CAMEL, oracleTypeName);
     }
 
@@ -21,18 +28,25 @@ public class DefaultNamingStrategy implements NamingStrategy {
 
     @Override
     public String getTypePackage(String schema) {
-        return String.format("%s.%s.type", basePackage, schema.toLowerCase());
+        return String.format("%s.%s.type", basePackage, scheamToPackageName(schema));
     }
 
     @Override
     public String getProcedurePackage(String schema) {
-        return String.format("%s.%s.procedure", basePackage, schema.toLowerCase());
+        return String.format("%s.%s.procedure", basePackage, scheamToPackageName(schema));
     }
 
     public String getProcedureClassName(OracleProcedure oracleProcedure) {
+        String overloadMark = oracleProcedure.getOverload() != null
+                ? String.valueOf(oracleProcedure.getOverload())
+                : "";
         return "PACKAGE".equals(oracleProcedure.getObjectType())
-                ? oracleTypeNameToJavaClassName(oracleProcedure.getObjectName() + "_" + oracleProcedure.getProcedureName())
+                ? oracleTypeNameToJavaClassName(oracleProcedure.getObjectName() + "_" + oracleProcedure.getProcedureName()) + overloadMark
                 : oracleTypeNameToJavaClassName(oracleProcedure.getObjectName());
+    }
+
+    private static String scheamToPackageName(String packageName) {
+        return packageName.toLowerCase().replaceAll(PACKAGE_NAME_REPLACE_REGEX, "");
     }
 
 }

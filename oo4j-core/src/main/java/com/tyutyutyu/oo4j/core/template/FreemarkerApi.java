@@ -15,11 +15,15 @@ public class FreemarkerApi {
     private final Configuration cfg;
 
     @SneakyThrows
-    public FreemarkerApi(File templateDir) {
+    public FreemarkerApi(String templateDir, boolean inClasspath) {
 
         cfg = new Configuration(Configuration.VERSION_2_3_29);
 
-        cfg.setDirectoryForTemplateLoading(templateDir);
+        if (inClasspath) {
+            cfg.setClassForTemplateLoading(this.getClass(), templateDir);
+        } else {
+            cfg.setDirectoryForTemplateLoading(new File(templateDir));
+        }
         cfg.setDefaultEncoding("UTF-8");
         cfg.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);
         cfg.setLogTemplateExceptions(false);

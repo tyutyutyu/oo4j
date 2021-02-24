@@ -6,53 +6,53 @@ import ${import};
 </#list>
 
 import jakarta.annotation.Generated;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
+import org.springframework.jdbc.core.SqlReturnType;
 
 import java.sql.SQLData;
 import java.sql.SQLException;
 import java.sql.SQLInput;
 import java.sql.SQLOutput;
 
+@AllArgsConstructor
+@Builder
 @Generated(value = "TODO", date = "${now?iso_utc}")
 @Getter
 @NoArgsConstructor
+@ToString
 public class ${className} implements SQLData {
 
     public static final String SQL_TYPE_NAME = "${schema}.${typeName}";
+    public static final SqlReturnType SQL_RETURN_TYPE = SqlReturnTypeFactory.createForSqlData(${className}.class);
 
     <#list fields as field>
-    private ${field.javaSimpleType} ${field.javaName};
+    private ${field.javaClass.className} ${field.name};
     </#list>
 
-    public ${className}(
-        <#list fields as field>
-        ${field.javaSimpleType} ${field.javaName}<#if field?has_next>,</#if>
-        </#list>
-    ) {
-        <#list fields as field>
-        this.${field.javaName} = ${field.javaName};
-        </#list>
-    }
-
     @Override
-    public String getSQLTypeName() throws SQLException {
+    public String getSQLTypeName() {
         return SQL_TYPE_NAME;
     }
 
     @Override
-    public void readSQL(SQLInput stream, String typeName) {
-        return new ${className}(
-            <#list fields as field>
-            ${field.javaName}<#if field?has_next>,</#if>
-            </#list>
-        );
+    public void readSQL(SQLInput stream, String typeName) throws SQLException {
+        <#list fields as field>
+        <#if field.custom>
+        this.${field.name} = stream.read${field.javaClass.jdbcAdaptedType}(${field.javaClass.className}.class);
+        <#else>
+        this.${field.name} = stream.read${field.javaClass.jdbcAdaptedType}();
+        </#if>
+        </#list>
     }
 
     @Override
     public void writeSQL(SQLOutput stream) throws SQLException {
         <#list fields as field>
-        stream.write${field.javaSimpleType}(${field.javaName});
+        stream.write${field.javaClass.jdbcAdaptedType}(${field.name});
         </#list>
     }
 

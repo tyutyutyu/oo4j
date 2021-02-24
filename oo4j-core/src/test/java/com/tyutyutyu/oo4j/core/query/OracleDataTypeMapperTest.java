@@ -1,72 +1,87 @@
 package com.tyutyutyu.oo4j.core.query;
 
 import com.tyutyutyu.oo4j.core.NamingStrategy;
+import com.tyutyutyu.oo4j.core.javalang.JavaClass;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import java.util.List;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.InstanceOfAssertFactories.CLASS;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class OracleDataTypeMapperTest {
 
-    @MethodSource("toJavaTypeArgumentProvider")
-    @ParameterizedTest
-    void testOracleDataTypeToJavaType(String oracleType, String javaType) {
+    private OracleDataTypeMapper oracleDataTypeMapper;
 
-        // given
-        NamingStrategy namingStrategy = mock(NamingStrategy.class);
-        OracleDataTypeMapper oracleDataTypeMapper = new OracleDataTypeMapper(namingStrategy);
+    private NamingStrategy namingStrategy;
 
-        // when
-        String actual = oracleDataTypeMapper.oracleDataTypeToJavaType(oracleType, null, null);
-
-        // then
-        assertThat(actual).isEqualTo(javaType);
+    @BeforeEach
+    public void beforeEach() {
+        namingStrategy = mock(NamingStrategy.class);
+        oracleDataTypeMapper = new OracleDataTypeMapper(namingStrategy);
     }
 
-    @MethodSource("toJdbcTypeArgumentProvider")
+    @MethodSource("toJavaTypeArgumentProvider")
     @ParameterizedTest
-    void testToJdbcType(String oracleType, String jdbcType) {
+    void testOracleDataTypeToJavaType(OracleType givenOracleType, JavaClass expectedJavaType) {
 
         // given
-        NamingStrategy namingStrategy = mock(NamingStrategy.class);
-        OracleDataTypeMapper oracleDataTypeMapper = new OracleDataTypeMapper(namingStrategy);
+        when(namingStrategy.getTypePackage(any())).thenReturn("basepackage.testschema");
+        when(namingStrategy.oracleTypeNameToJavaClassName(any())).thenReturn("MyType");
 
         // when
-        String actual = oracleDataTypeMapper.toJdbcType(oracleType);
+        JavaClass actual = oracleDataTypeMapper.oracleDataTypeToJavaClass(givenOracleType, null);
 
         // then
-        assertThat(actual).isEqualTo(jdbcType);
+        assertThat(actual).isEqualTo(expectedJavaType);
     }
 
     private static Stream<Arguments> toJavaTypeArgumentProvider() {
         return Stream.of(
-                Arguments.of("VARCHAR2", "java.lang.String"),
-                Arguments.of("CHAR", "java.lang.String"),
-                Arguments.of("CLOB", "java.sql.Clob"),
-                Arguments.of("NUMBER", "java.math.BigDecimal"),
-                Arguments.of("FLOAT", "java.lang.Double"),
-                Arguments.of("DATE", "java.sql.Date"),
-                Arguments.of("TIMESTAMP", "java.sql.Timestamp"),
-                Arguments.of("RAW", "byte[]"),
-                Arguments.of("BLOB", "java.sql.Blob")
-        );
-    }
-
-    private static Stream<Arguments> toJdbcTypeArgumentProvider() {
-        return Stream.of(
-                Arguments.of("VARCHAR2", "VARCHAR"),
-                Arguments.of("CHAR", "CHAR"),
-                Arguments.of("CLOB", "CLOB"),
-                Arguments.of("NUMBER", "NUMERIC"),
-                Arguments.of("FLOAT", "FLOAT"),
-                Arguments.of("DATE", "DATE"),
-                Arguments.of("TIMESTAMP", "TIMESTAMP"),
-                Arguments.of("RAW", "BINARY"),
-                Arguments.of("BLOB", "BLOB")
+                Arguments.of(OracleBasicType.BLOB, JavaClass.BYTE_ARRAY),
+                Arguments.of(OracleBasicType.CHAR, JavaClass.STRING),
+                Arguments.of(OracleBasicType.CLOB, JavaClass.STRING),
+                Arguments.of(OracleBasicType.DATE, JavaClass.DATE),
+                Arguments.of(OracleBasicType.FLOAT, JavaClass.DOUBLE),
+                Arguments.of(OracleBasicType.NUMBER, JavaClass.BIG_DECIMAL),
+                Arguments.of(OracleBasicType.RAW, JavaClass.BYTE_ARRAY),
+                Arguments.of(OracleBasicType.TIMESTAMP, JavaClass.TIMESTAMP),
+                Arguments.of(OracleBasicType.VARCHAR2, JavaClass.STRING),
+                Arguments.of(new OracleObjectType("T_TYPE", List.of()), new JavaClass(
+                        "basepackage.testschema",
+                        "MyType",
+                        false,
+                        null,
+                        false,
+                        null,
+                        "Object"
+                )),
+                Arguments.of(new OracleCursorType(), JavaClass.listOf(null)),
+                Arguments.of(new OracleTableType("MY_SCHEMA", "T_TYPE_TAB", "T_TYPE"),
+                        new JavaClass(
+                                "basepackage.testschema",
+                                "MyType",
+                                false,
+                                new JavaClass(
+                                        "basepackage.testschema",
+                                        "MyType",
+                                        false,
+                                        null,
+                                        false,
+                                        null,
+                                        null
+                                ),
+                                true,
+                                JavaClass.ContainerType.LIST,
+                                "Array"
+                        ))
         );
     }
 

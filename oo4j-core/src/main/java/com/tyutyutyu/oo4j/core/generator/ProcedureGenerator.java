@@ -9,6 +9,7 @@ import com.tyutyutyu.oo4j.core.result.SourceWriter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.Collection;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -19,8 +20,13 @@ class ProcedureGenerator {
     private final ProcedureMetadataMapper procedureMetadataMapper;
     private final SourceWriter sourceWriter;
 
-    void generateProcedures(String schema) {
+    void generateProcedures(String schema, Collection<String> excludes) {
         metadataQuery.queryProcedures(schema)
+                .stream()
+                .filter(oracleProcedure ->
+                        !excludes.contains(oracleProcedure.getProcedureName())
+                                && !excludes.contains(oracleProcedure.getSchema() + "." + oracleProcedure.getProcedureName())
+                )
                 .forEach(procedure -> generateProcedure(schema, procedure));
     }
 
@@ -28,11 +34,7 @@ class ProcedureGenerator {
 
         log.debug("generateStoredProcedure - schema: {}, oracleProcedure: {}", schema, oracleProcedure);
 
-        List<OracleProcedureField> oracleProcedureFields = metadataQuery.queryProcedureFields(
-                schema,
-                oracleProcedure.getObjectName(),
-                oracleProcedure.getProcedureName()
-        );
+        List<OracleProcedureField> oracleProcedureFields = metadataQuery.queryProcedureFields(oracleProcedure);
 
         JavaProcedureMetadata javaProcedureMetadata = procedureMetadataMapper.toJavaProcedureMetadata(
                 schema,

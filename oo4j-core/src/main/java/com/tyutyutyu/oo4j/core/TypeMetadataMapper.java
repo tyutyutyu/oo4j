@@ -1,11 +1,14 @@
 package com.tyutyutyu.oo4j.core;
 
-import com.tyutyutyu.oo4j.core.generator.JavaTypeMetadata;
+import com.tyutyutyu.oo4j.core.generator.JavaTypeModel;
+import com.tyutyutyu.oo4j.core.javalang.JavaClass;
+import com.tyutyutyu.oo4j.core.javalang.JavaClassUtils;
 import com.tyutyutyu.oo4j.core.query.OracleDataTypeMapper;
+import com.tyutyutyu.oo4j.core.query.OracleTypeField;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.util.ClassUtils;
 
+import javax.annotation.Nonnull;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -16,36 +19,15 @@ public class TypeMetadataMapper {
     private final NamingStrategy namingStrategy;
     private final OracleDataTypeMapper oracleDataTypeMapper;
 
-    public JavaTypeMetadata toJavaTypeMetadata(String schema, String typeName, List<OracleTypeField> oracleTypeFields) {
+    public JavaTypeModel toJavaTypeMetadata(String schema, String typeName, List<OracleTypeField> oracleTypeFields) {
 
-        List<JavaTypeField> javaTypeFields = oracleTypeFields
-                .stream()
-                .map(oracleTypeField -> {
-                    String javaTypeName = oracleDataTypeMapper.oracleDataTypeToJavaType(
-                            "OBJECT",
-                            schema,
-                            oracleTypeField.getTypeName()
-                    );
-                    return new JavaTypeField(
-                            namingStrategy.oracleAttributeNameToJavaVariableName(oracleTypeField.getName()),
-                            javaTypeName,
-                            ClassUtils.getShortName(javaTypeName)
-                    );
-
-                })
-                .collect(Collectors.toUnmodifiableList());
-
+        List<JavaTypeField> javaTypeFields = getJavaTypeFields(schema, oracleTypeFields);
 
         String packageName = namingStrategy.getTypePackage(schema);
-        List<String> imports = javaTypeFields
-                .stream()
-                .filter(javaTypeField -> !javaTypeField.getClassName().startsWith("java.lang"))
-                .map(JavaTypeField::getClassName)
-                .distinct()
-                .collect(Collectors.toUnmodifiableList());
+        List<String> imports = getImports(javaTypeFields);
         String className = namingStrategy.oracleTypeNameToJavaClassName(typeName);
 
-        return new JavaTypeMetadata(
+        return new JavaTypeModel(
                 packageName,
                 imports,
                 className,
@@ -53,6 +35,32 @@ public class TypeMetadataMapper {
                 typeName,
                 javaTypeFields
         );
+    }
+
+    @Nonnull
+    private List<JavaTypeField> getJavaTypeFields(String schema, List<OracleTypeField> oracleTypeFields) {
+        return oracleTypeFields
+                .stream()
+                .map(oracleTypeField -> {
+                    JavaClass javaClass = oracleDataTypeMapper.oracleDataTypeToJavaClass(
+                            oracleTypeField.getType(),
+                            schema
+                    );
+                    return new JavaTypeField(
+                            namingStrategy.oracleAttributeNameToJavaVariableName(oracleTypeField.getName()),
+                            javaClass,
+                            "Object".equals(javaClass.getJdbcAdaptedType()) // TODO: FI: review
+                    );
+
+                })
+                .collect(Collectors.toUnmodifiableList());
+    }
+
+    @Nonnull
+    private List<String> getImports(List<JavaTypeField> javaTypeFields) {
+        return JavaClassUtils.toImportList(javaTypeFields
+                .stream()
+                .map(JavaTypeField::getJavaClass));
     }
 
 }

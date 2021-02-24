@@ -2,6 +2,7 @@ package com.tyutyutyu.oo4j.core.template;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 
 import java.io.File;
 import java.io.IOException;
@@ -15,8 +16,8 @@ class FreemarkerApiTest {
     void testGenerate() throws IOException {
 
         // given
-        File templateDir = new ClassPathResource("/test-templates/").getFile();
-        FreemarkerApi freemarkerApi = new FreemarkerApi(templateDir);
+        String templateDir = "/test-templates/";
+        FreemarkerApi freemarkerApi = new FreemarkerApi(templateDir, true);
 
         // when
         String actual = freemarkerApi.generate("test1", Map.of("a", "b"));
