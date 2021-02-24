@@ -26,6 +26,9 @@ jobs:
           restore-keys: ${{ runner.os }}-m2
       - name: Build and analyze
         env:
+        run: mvn --batch-mode --update-snapshots verify
+      - name: Analyze with Sonarcloud
+        env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: mvn --batch-mode --update-snapshots verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar
+        run: mvn --batch-mode -Psonarcloud org.sonarsource.scanner.maven:sonar-maven-plugin:sonar
