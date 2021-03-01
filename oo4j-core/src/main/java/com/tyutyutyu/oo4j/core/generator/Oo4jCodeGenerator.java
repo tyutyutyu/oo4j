@@ -5,71 +5,66 @@ import com.tyutyutyu.oo4j.core.ProcedureMetadataMapper;
 import com.tyutyutyu.oo4j.core.TypeMetadataMapper;
 import com.tyutyutyu.oo4j.core.query.MetadataQuery;
 import com.tyutyutyu.oo4j.core.query.OracleDataTypeMapper;
+import com.tyutyutyu.oo4j.core.query.OracleType;
 import com.tyutyutyu.oo4j.core.result.SourceWriter;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 
 import javax.sql.DataSource;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class Oo4jCodeGenerator {
 
-    private final NamingStrategy namingStrategy;
+    private final String basePackage;
+    private final MetadataQuery metadataQuery;
     private final TypeGenerator typeGenerator;
-    private final TableTypeGenerator tableTypeGenerator;
-    private final ProcedureGenerator procedureGenerator;
+    private final ProcedureMetadataMapper procedureMetadataMapper;
     private final SourceWriter sourceWriter;
 
     public Oo4jCodeGenerator(
+            String basePackage,
             DataSource dataSource,
             NamingStrategy namingStrategy,
             SourceWriter sourceWriter
     ) {
-        this.namingStrategy = namingStrategy;
+        this.basePackage = basePackage;
+        OracleDataTypeMapper oracleDataTypeMapper = new OracleDataTypeMapper(namingStrategy);
+        this.procedureMetadataMapper = new ProcedureMetadataMapper(namingStrategy, oracleDataTypeMapper);
         this.sourceWriter = sourceWriter;
         NamedParameterJdbcTemplate jdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
-        MetadataQuery metadataQuery = new MetadataQuery(jdbcTemplate);
-        typeGenerator = new TypeGenerator(
-                metadataQuery,
-                new TypeMetadataMapper(namingStrategy, new OracleDataTypeMapper(namingStrategy))
-        );
-        tableTypeGenerator = new TableTypeGenerator(
-                metadataQuery,
-                new TableTypeMetadataMapper(namingStrategy),
-                sourceWriter
-        );
-        procedureGenerator = new ProcedureGenerator(
-                metadataQuery,
-                new ProcedureMetadataMapper(namingStrategy, new OracleDataTypeMapper(namingStrategy)),
-                sourceWriter
-        );
+        metadataQuery = new MetadataQuery(jdbcTemplate);
+        typeGenerator = new TypeGenerator(new TypeMetadataMapper(namingStrategy, oracleDataTypeMapper));
     }
 
-    public void generate(Collection<String> schemaList, Collection<String> typeExcludes, Collection<String> procedureExcludes) {
-        schemaList.forEach(schema -> {
-            List<JavaTypeModel> types = generateTypes(schema, typeExcludes);
-            types.forEach(sourceWriter::writeType);
-            generateTableTypes(schema, typeExcludes);
-            generateProcedures(schema, procedureExcludes);
-            generateHelperClasses(schema);
-        });
+    public void generate(Collection<String> schemas, Collection<String> typeExcludes, Collection<String> procedureExcludes) {
+
+        Map<String, OracleType> typesMap = metadataQuery.queryTypes(schemas);
+        typesMap = typesMap
+                .entrySet()
+                .stream()
+                .filter(e -> !typeExcludes.contains(e.getKey()))
+                .collect(Collectors.toUnmodifiableMap(Map.Entry::getKey, Map.Entry::getValue));
+
+        List<JavaTypeModel> typeModels = typeGenerator.generateObjectTypes(typesMap.values());
+        typeModels.forEach(sourceWriter::writeType);
+
+        List<JavaTableTypeModel> tableTypeModels = typeGenerator.generateTableTypes(typesMap.values());
+        tableTypeModels.forEach(sourceWriter::writeTableType);
+
+        metadataQuery.queryProcedures(schemas, typesMap)
+                .stream()
+                .filter(oracleProcedure -> !procedureExcludes.contains(oracleProcedure.getFullyQualifiedName()))
+                .map(procedureMetadataMapper::toJavaProcedureMetadata)
+                .forEach(sourceWriter::writeProcedure);
+
+        generateHelperClasses();
     }
 
-    public List<JavaTypeModel> generateTypes(String schema, Collection<String> typeExcludes) {
-        return typeGenerator.generateTypes(schema, typeExcludes);
-    }
-
-    public void generateTableTypes(String schema, Collection<String> typeExcludes) {
-        tableTypeGenerator.generateTableTypes(schema, typeExcludes);
-    }
-
-    public void generateProcedures(String schema, Collection<String> procedureExcludes) {
-        procedureGenerator.generateProcedures(schema, procedureExcludes);
-    }
-
-    private void generateHelperClasses(String schema) {
-        sourceWriter.writeSqlReturnTypeFactory(namingStrategy.getTypePackage(schema));
-        sourceWriter.writeSqlTypeValueFactory(namingStrategy.getTypePackage(schema));
+    private void generateHelperClasses() {
+        sourceWriter.writeSqlReturnTypeFactory(basePackage);
+        sourceWriter.writeSqlTypeValueFactory(basePackage);
     }
 
 }

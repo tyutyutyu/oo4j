@@ -1,10 +1,12 @@
 package com.tyutyutyu.oo4j.core;
 
+import com.tyutyutyu.oo4j.core.generator.JavaTableTypeModel;
 import com.tyutyutyu.oo4j.core.generator.JavaTypeModel;
 import com.tyutyutyu.oo4j.core.javalang.JavaClass;
 import com.tyutyutyu.oo4j.core.javalang.JavaClassUtils;
 import com.tyutyutyu.oo4j.core.query.OracleDataTypeMapper;
-import com.tyutyutyu.oo4j.core.query.OracleTypeField;
+import com.tyutyutyu.oo4j.core.query.OracleObjectType;
+import com.tyutyutyu.oo4j.core.query.OracleTableType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -19,32 +21,49 @@ public class TypeMetadataMapper {
     private final NamingStrategy namingStrategy;
     private final OracleDataTypeMapper oracleDataTypeMapper;
 
-    public JavaTypeModel toJavaTypeMetadata(String schema, String typeName, List<OracleTypeField> oracleTypeFields) {
+    public JavaTypeModel toJavaTypeMetadata(OracleObjectType oracleObjectType) {
 
-        List<JavaTypeField> javaTypeFields = getJavaTypeFields(schema, oracleTypeFields);
+        List<JavaTypeField> javaTypeFields = getJavaTypeFields(oracleObjectType);
 
-        String packageName = namingStrategy.getTypePackage(schema);
+        String packageName = namingStrategy.getTypePackage(oracleObjectType.getSchema());
         List<String> imports = getImports(javaTypeFields);
-        String className = namingStrategy.oracleTypeNameToJavaClassName(typeName);
+        String className = namingStrategy.oracleTypeNameToJavaClassName(oracleObjectType.getName());
 
         return new JavaTypeModel(
                 packageName,
                 imports,
                 className,
-                schema,
-                typeName,
+                oracleObjectType.getSchema(),
+                oracleObjectType.getName(),
                 javaTypeFields
         );
     }
 
+    public JavaTableTypeModel toJavaTableTypeMetadata(OracleTableType oracleTableType) {
+
+        String packageName = namingStrategy.getTypePackage(oracleTableType.getSchema());
+        List<String> imports = List.of();
+        String className = namingStrategy.oracleTypeNameToJavaClassName(oracleTableType.getName());
+        String componentClassName = namingStrategy.oracleTypeNameToJavaClassName(oracleTableType.getComponentTypeName());
+
+        return new JavaTableTypeModel(
+                packageName,
+                imports,
+                className,
+                componentClassName,
+                oracleTableType.getSchema(),
+                oracleTableType.getName()
+        );
+    }
+
     @Nonnull
-    private List<JavaTypeField> getJavaTypeFields(String schema, List<OracleTypeField> oracleTypeFields) {
-        return oracleTypeFields
+    private List<JavaTypeField> getJavaTypeFields(OracleObjectType oracleObjectType) {
+        return oracleObjectType.getFields()
                 .stream()
                 .map(oracleTypeField -> {
                     JavaClass javaClass = oracleDataTypeMapper.oracleDataTypeToJavaClass(
                             oracleTypeField.getType(),
-                            schema
+                            oracleObjectType.getSchema()
                     );
                     return new JavaTypeField(
                             namingStrategy.oracleAttributeNameToJavaVariableName(oracleTypeField.getName()),

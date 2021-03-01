@@ -54,7 +54,7 @@ class OracleDataTypeMapperTest {
                 Arguments.of(OracleBasicType.RAW, JavaClass.BYTE_ARRAY),
                 Arguments.of(OracleBasicType.TIMESTAMP, JavaClass.TIMESTAMP),
                 Arguments.of(OracleBasicType.VARCHAR2, JavaClass.STRING),
-                Arguments.of(new OracleObjectType("T_TYPE", List.of()), new JavaClass(
+                Arguments.of(new OracleObjectType("MY_SCHEMA", "T_TYPE", List.of()), new JavaClass(
                         "basepackage.testschema",
                         "MyType",
                         false,

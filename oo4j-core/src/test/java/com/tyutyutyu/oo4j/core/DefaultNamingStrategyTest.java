@@ -4,11 +4,7 @@ import com.tyutyutyu.oo4j.core.query.OracleProcedure;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import javax.naming.Name;
-
-import static org.assertj.core.api.Assertions.*;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.*;
 
 class DefaultNamingStrategyTest {
 
@@ -79,7 +75,7 @@ class DefaultNamingStrategyTest {
         // given
         String basePackage = "a.b.c";
         NamingStrategy namingStrategy = new DefaultNamingStrategy(basePackage);
-        OracleProcedure oracleProcedure = new OracleProcedure(null, "SOME_PACKAGE", "SOME_PROCEDURE", "PACKAGE", 1, null);
+        OracleProcedure oracleProcedure = new OracleProcedure(null, "SOME_PACKAGE", "SOME_PROCEDURE", "PACKAGE", 1, null, null);
 
         // when
         String actual = namingStrategy.getProcedureClassName(oracleProcedure);
@@ -95,7 +91,7 @@ class DefaultNamingStrategyTest {
         // given
         String basePackage = "a.b.c";
         NamingStrategy namingStrategy = new DefaultNamingStrategy(basePackage);
-        OracleProcedure oracleProcedure = new OracleProcedure(null, "SOME_PACKAGE", "SOME_PROCEDURE", "PACKAGE", 1, 1);
+        OracleProcedure oracleProcedure = new OracleProcedure(null, "SOME_PACKAGE", "SOME_PROCEDURE", "PACKAGE", 1, 1, null);
 
         // when
         String actual = namingStrategy.getProcedureClassName(oracleProcedure);
@@ -111,7 +107,7 @@ class DefaultNamingStrategyTest {
         // given
         String basePackage = "a.b.c";
         NamingStrategy namingStrategy = new DefaultNamingStrategy(basePackage);
-        OracleProcedure oracleProcedure = new OracleProcedure(null, "SOME_PROCEDURE", null, null, 1, null);
+        OracleProcedure oracleProcedure = new OracleProcedure(null, "SOME_PROCEDURE", null, null, 1, null, null);
 
         // when
         String actual = namingStrategy.getProcedureClassName(oracleProcedure);

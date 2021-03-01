@@ -1,21 +1,28 @@
 package com.tyutyutyu.oo4j.core.query;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
-@EqualsAndHashCode
-@Getter
-@RequiredArgsConstructor
-@ToString
+import java.util.List;
+
+@Value
 public class OracleProcedure {
 
-    private final String schema;
-    private final String objectName;
-    private final String procedureName;
-    private final String objectType;
-    private final int subprogramId;
-    private final Integer overload;
+    String schema;
+    String objectName;
+    String procedureName;
+    String objectType;
+    int subprogramId;
+    Integer overload;
+    List<OracleProcedureField> fields;
+
+    public String getName() {
+        return "PACKAGE".equals(objectType)
+                ? objectName + "." + procedureName
+                : objectName;
+    }
+
+    public String getFullyQualifiedName() {
+        return schema + "." + getName();
+    }
 
 }

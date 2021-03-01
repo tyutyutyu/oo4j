@@ -1,21 +1,20 @@
 package com.tyutyutyu.oo4j.core.query;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 import java.sql.JDBCType;
 
-@EqualsAndHashCode
-@Getter
-@RequiredArgsConstructor
-@ToString
+@Value
 public class OracleCursorType implements OracleComplexType {
 
     @Override
     public String getName() {
         return "CURSOR";
+    }
+
+    @Override
+    public String getFullyQualifiedName() {
+        return getName();
     }
 
     @Override

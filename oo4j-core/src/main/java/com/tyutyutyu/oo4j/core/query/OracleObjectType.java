@@ -1,26 +1,25 @@
 package com.tyutyutyu.oo4j.core.query;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 import java.sql.JDBCType;
 import java.util.List;
 
-@EqualsAndHashCode
-@Getter
-@RequiredArgsConstructor
-@ToString
+@Value
 public class OracleObjectType implements OracleComplexType {
 
-    private final String name;
-    private final List<OracleTypeField> fields;
+    String schema;
+    String name;
+    List<OracleTypeField> fields;
 
     @Override
     public JDBCType getJdbcType() {
         return JDBCType.STRUCT;
     }
 
+    @Override
+    public String getFullyQualifiedName() {
+        return schema + "." + name;
+    }
 }
 

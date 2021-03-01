@@ -56,30 +56,30 @@ public class FileSourceWriter implements SourceWriter {
 
 
     @Override
-    public void writeSqlReturnTypeFactory(String procedurePackageName) {
+    public void writeSqlReturnTypeFactory(String packageName) {
 
         String classSource = freemarkerApi.generate(
                 "sql_return_type_factory_class",
-                Map.of("packageName", procedurePackageName)
+                Map.of("packageName", packageName)
         );
 
         write(
-                procedurePackageName,
+                packageName,
                 "SqlReturnTypeFactory",
                 classSource
         );
     }
 
     @Override
-    public void writeSqlTypeValueFactory(String procedurePackageName) {
+    public void writeSqlTypeValueFactory(String packageName) {
 
         String classSource = freemarkerApi.generate(
                 "sql_type_value_factory_class",
-                Map.of("packageName", procedurePackageName)
+                Map.of("packageName", packageName)
         );
 
         write(
-                procedurePackageName,
+                packageName,
                 "SqlTypeValueFactory",
                 classSource
         );

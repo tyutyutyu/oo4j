@@ -1,17 +1,11 @@
 package com.tyutyutyu.oo4j.core.query;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
-@EqualsAndHashCode
-@Getter
-@RequiredArgsConstructor
-@ToString
+@Value
 public class OracleTypeField {
 
-    private final String name;
-    private final OracleType type;
+    String name;
+    OracleType type;
 
 }

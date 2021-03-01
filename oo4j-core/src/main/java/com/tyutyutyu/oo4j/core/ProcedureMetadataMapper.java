@@ -8,8 +8,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.annotation.Nonnull;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -23,26 +23,41 @@ public class ProcedureMetadataMapper {
     private final NamingStrategy namingStrategy;
     private final OracleDataTypeMapper oracleDataTypeMapper;
 
-    public JavaProcedureMetadata toJavaProcedureMetadata(
-            String schema,
-            OracleProcedure oracleProcedure,
-            List<OracleProcedureField> oracleProcedureFields
-    ) {
+    public JavaProcedureMetadata toJavaProcedureMetadata(OracleProcedure oracleProcedure) {
 
-        log.debug("toJavaProcedureMetadata - schema: {}, oracleProcedure: {}, oracleProcedureFields: {}",
-                schema, oracleProcedure, oracleProcedureFields);
+        log.debug("toJavaProcedureMetadata - oracleProcedure.fullyQualifiedName: {}",
+                oracleProcedure.getFullyQualifiedName());
 
-        String packageName = namingStrategy.getProcedurePackage(schema);
+        String packageName = namingStrategy.getProcedurePackage(oracleProcedure.getSchema());
         String className = namingStrategy.getProcedureClassName(oracleProcedure);
 
         String sql = createSql(oracleProcedure);
 
         AtomicInteger rowMapperIndex = new AtomicInteger(0);
-        List<Param> inParams = toParams(schema, oracleProcedureFields, rowMapperIndex, "IN");
-        List<Param> inOutParams = toParams(schema, oracleProcedureFields, rowMapperIndex, "IN/OUT");
-        List<Param> outParams = toParams(schema, oracleProcedureFields, rowMapperIndex, "OUT");
+        List<Param> inParams = toParams(
+                oracleProcedure.getSchema(),
+                oracleProcedure.getFields(),
+                rowMapperIndex,
+                "IN"
+        );
+        List<Param> inOutParams = toParams(
+                oracleProcedure.getSchema(),
+                oracleProcedure.getFields(),
+                rowMapperIndex,
+                "IN/OUT"
+        );
+        List<Param> outParams = toParams(
+                oracleProcedure.getSchema(),
+                oracleProcedure.getFields(),
+                rowMapperIndex,
+                "OUT"
+        );
         List<RowMapperMetadata> rowMappers = getRowMappers(inOutParams, outParams);
-        List<String> imports = getImports(schema, oracleProcedureFields, !rowMappers.isEmpty());
+        List<String> imports = getImports(
+                oracleProcedure.getSchema(),
+                oracleProcedure.getFields(),
+                !rowMappers.isEmpty()
+        );
 
         return new JavaProcedureMetadata(
                 packageName,
@@ -66,16 +81,10 @@ public class ProcedureMetadataMapper {
     }
 
     private List<RowMapperMetadata> getRowMappers(List<Param> inOutParams, List<Param> outParams) {
-
-        List<Param> temp = Stream.concat(inOutParams.stream(), outParams.stream())
+        return Stream.concat(inOutParams.stream(), outParams.stream())
                 .filter(param -> param.getRowMapperType() != null)
+                .map(param -> new RowMapperMetadata(param.getRowMapperType(), param.getJavaName()))
                 .collect(Collectors.toUnmodifiableList());
-
-        List<RowMapperMetadata> rowMappers = new ArrayList<>();
-        for (int i = 0; i < temp.size(); i++) {
-            rowMappers.add(new RowMapperMetadata(temp.get(i).getRowMapperType(), temp.get(i).getJavaName()));
-        }
-        return rowMappers;
     }
 
     private List<String> getImports(String schema, List<OracleProcedureField> oracleProcedureFields, boolean addRowMapper) {

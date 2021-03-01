@@ -1,9 +1,7 @@
 package com.tyutyutyu.oo4j.core.query;
 
 import com.tyutyutyu.oo4j.core.javalang.JavaClass;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.*;
 
 import java.sql.JDBCType;
 
@@ -29,7 +27,12 @@ public enum OracleBasicType implements OracleType {
 
     @Override
     public String getName() {
-        return jdbcType.name();
+        return oracleDataType;
+    }
+
+    @Override
+    public String getFullyQualifiedName() {
+        return getName();
     }
 
 }

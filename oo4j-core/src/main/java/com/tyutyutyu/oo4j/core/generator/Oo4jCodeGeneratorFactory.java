@@ -33,6 +33,7 @@ public class Oo4jCodeGeneratorFactory {
         );
 
         return new Oo4jCodeGenerator(
+                basePackage,
                 dataSource,
                 namingStrategy,
                 sourceWriter

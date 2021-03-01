@@ -10,8 +10,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
-import static com.tyutyutyu.oo4j.core.query.MetadataQuery.TypeCode;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(DatabaseIntegrationTestExtension.class)
@@ -26,102 +29,135 @@ class MetadataQueryIT {
         metadataQuery = new MetadataQuery(jdbcTemplate);
     }
 
+    @DisplayName("queryTypes() should return all types")
     @Test
-    void testQueryTypesWithObjectType() {
+    void testQueryTypes1() {
 
         // given
+        List<String> schemas = List.of("OO4J");
 
         // when
-        List<String> actual = metadataQuery.queryTypeNames("OO4J", TypeCode.OBJECT);
+        Map<String, OracleType> actual = metadataQuery.queryTypes(schemas);
 
         // then
-        assertThat(actual).containsExactlyInAnyOrder("T_SIMPLE_TYPE", "T_TEST_TYPE");
+        assertThat(actual).containsOnlyKeys("OO4J.T_SIMPLE_TYPE", "OO4J.T_TEST_TYPE", "OO4J.T_TEST_TYPE_TABLE");
     }
 
+    @DisplayName("queryTypes() should return the T_TEST_TYPE type with appropriate fields")
     @Test
-    void testQueryTypesWithTableType() {
+    void testQueryType2() {
 
         // given
+        List<String> schemas = List.of("OO4J");
 
         // when
-        List<String> actual = metadataQuery.queryTypeNames("OO4J", TypeCode.COLLECTION);
+        Map<String, OracleType> actual = metadataQuery.queryTypes(schemas);
 
         // then
-        assertThat(actual).containsExactly("T_TEST_TYPE_TABLE");
-    }
+        System.err.println("actual: " + actual);
+        OracleObjectType oracleObjectType = (OracleObjectType) actual.get("OO4J.T_TEST_TYPE");
+        assertThat(oracleObjectType.getFields().get(8).getType()).isSameAs(actual.get("OO4J.T_SIMPLE_TYPE"));
 
-    @Test
-    void testQueryTypeFields() {
-
-        // given
-
-        // when
-        List<OracleTypeField> actual = metadataQuery.queryTypeFields("OO4J", "T_TEST_TYPE");
-
-        // then
-        assertThat(actual).containsExactly(
-                new OracleTypeField("TEST_VARCHAR2", OracleBasicType.VARCHAR2),
-                new OracleTypeField("TEST_CHAR", OracleBasicType.CHAR),
-                new OracleTypeField("TEST_CLOB", OracleBasicType.CLOB),
-                new OracleTypeField("TEST_NUMBER", OracleBasicType.NUMBER),
-                new OracleTypeField("TEST_FLOAT", OracleBasicType.FLOAT),
-                new OracleTypeField("TEST_DATE", OracleBasicType.DATE),
-                new OracleTypeField("TEST_TIMESTAMP", OracleBasicType.TIMESTAMP),
-                new OracleTypeField("TEST_BLOB", OracleBasicType.BLOB),
-                new OracleTypeField("TEST_SIMPLE_TYPE",
-                        new OracleObjectType(
-                                "T_SIMPLE_TYPE",
-                                List.of(
-                                        new OracleTypeField("TEST_VARCHAR2", OracleBasicType.VARCHAR2)
+        assertThat(actual).containsEntry(
+                "OO4J.T_TEST_TYPE",
+                new OracleObjectType(
+                        "OO4J",
+                        "T_TEST_TYPE",
+                        List.of(
+                                new OracleTypeField("TEST_VARCHAR2", OracleBasicType.VARCHAR2),
+                                new OracleTypeField("TEST_CHAR", OracleBasicType.CHAR),
+                                new OracleTypeField("TEST_CLOB", OracleBasicType.CLOB),
+                                new OracleTypeField("TEST_NUMBER", OracleBasicType.NUMBER),
+                                new OracleTypeField("TEST_FLOAT", OracleBasicType.FLOAT),
+                                new OracleTypeField("TEST_DATE", OracleBasicType.DATE),
+                                new OracleTypeField("TEST_TIMESTAMP", OracleBasicType.TIMESTAMP),
+                                new OracleTypeField("TEST_BLOB", OracleBasicType.BLOB),
+                                new OracleTypeField("TEST_SIMPLE_TYPE",
+                                        new OracleObjectType(
+                                                "OO4J",
+                                                "T_SIMPLE_TYPE",
+                                                List.of(
+                                                        new OracleTypeField("TEST_VARCHAR2", OracleBasicType.VARCHAR2)
+                                                )
+                                        )
                                 )
                         )
                 )
         );
     }
 
+    @DisplayName("queryProcedures() should return all procedures")
     @Test
     void testQueryProcedures() {
 
         // given
+        List<String> schemas = List.of("OO4J");
+        Map<String, OracleType> typesMap = Map.of();
 
         // when
-        List<OracleProcedure> actual = metadataQuery.queryProcedures("OO4J");
+        List<OracleProcedure> actual = metadataQuery.queryProcedures(schemas, typesMap);
 
         // then
-        assertThat(actual).containsExactly(
-                new OracleProcedure("OO4J", "TEST_PROCEDURE", null, "PROCEDURE", 1, null),
-                new OracleProcedure("OO4J", "TEST_PACKAGE", "TEST_PROCEDURE2", "PACKAGE", 1, 1),
-                new OracleProcedure("OO4J", "TEST_PACKAGE", "TEST_PROCEDURE2", "PACKAGE", 2, 2)
-        );
+        assertThat(actual).hasSize(3);
+        assertThat(actual)
+                .map(OracleProcedure::getFullyQualifiedName)
+                .containsExactly(
+                        "OO4J.TEST_PROCEDURE",
+                        "OO4J.TEST_PACKAGE.TEST_PROCEDURE2",
+                        "OO4J.TEST_PACKAGE.TEST_PROCEDURE2"
+                );
     }
 
     @Test
     void testQueryProcedureFields1() {
 
         // given
+        List<String> schemas = List.of("OO4J");
+        Map<String, OracleType> typesMap = metadataQuery.queryTypes(schemas);
 
         // when
-        List<OracleProcedureField> actual = metadataQuery.queryProcedureFields(
-                new OracleProcedure("OO4J", null, "TEST_PROCEDURE", "PROCEDURE", 1, null)
-        );
+        List<OracleProcedure> actual = metadataQuery.queryProcedures(schemas, typesMap);
+
+        System.out.println("oracleProcedure: " + actual);
 
         // then
-        assertThat(actual).hasSize(20);
+        assertThat(actual
+                .stream()
+                .filter(oracleProcedure -> oracleProcedure.getFullyQualifiedName().equals("OO4J.TEST_PROCEDURE"))
+                .findAny()
+                .get()
+                .getFields()
+        )
+                .hasSize(20);
+        assertThat(actual
+                .stream()
+                .filter(oracleProcedure ->
+                        oracleProcedure.getFullyQualifiedName().equals("OO4J.TEST_PACKAGE.TEST_PROCEDURE2")
+                                && oracleProcedure.getOverload() == 1
+                )
+                .findAny()
+                .get()
+                .getFields()
+        )
+                .hasSize(2);
     }
 
-    @DisplayName("With overloaded procedure")
-    @Test
-    void testQueryProcedureFields2() {
-
-        // given
-
-        // when
-        List<OracleProcedureField> actual = metadataQuery.queryProcedureFields(
-                new OracleProcedure("OO4J", "TEST_PACKAGE", "TEST_PROCEDURE2", "PACKAGE", 1, 2)
-        );
-
-        // then
-        assertThat(actual).hasSize(1);
-    }
+//    @DisplayName("With overloaded procedure")
+//    @Test
+//    void testQueryProcedureFields2() {
+//
+//        // given
+//        List<String> schemas = List.of("OO4J");
+//        OracleProcedure oracleProcedure = new OracleProcedure("OO4J", "TEST_PACKAGE", "TEST_PROCEDURE2", "PACKAGE", 1, 2);
+//
+//        // when
+//        Map<OracleProcedure, List<OracleProcedureField>> actual = metadataQuery.queryProcedureFields(
+//                schemas,
+//                List.of(oracleProcedure),
+//                typesMap);
+//
+//        // then
+//        assertThat(actual.get(oracleProcedure)).hasSize(1);
+//    }
 
 }

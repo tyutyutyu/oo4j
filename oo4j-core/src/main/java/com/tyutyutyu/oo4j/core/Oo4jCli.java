@@ -52,10 +52,10 @@ public class Oo4jCli {
         @Option(names = {"-s", "--schema"}, description = "Schema list (comma separated)", split = ",", required = true)
         Set<String> schema;
 
-        @Option(names = {"-t", "--exclude-types"}, description = "Types to exclude (comma separated)", split = ",", defaultValue = "")
+        @Option(names = {"-t", "--exclude-types"}, description = "Types to exclude (e.g. \"SCHEMA1.TYPE1,SCHEMA2.TYPE2\")", split = ",", defaultValue = "")
         Set<String> typeExcludes;
 
-        @Option(names = {"-r", "--exclude-procedures"}, description = "Procedures to exclude (comma separated)", split = ",", defaultValue = "")
+        @Option(names = {"-r", "--exclude-procedures"}, description = "Procedures to exclude (e.g. \"SCHEMA1.PROCEDURE1,SCHEMA2.PACKAGE1.PROCEDURE2\")", split = ",", defaultValue = "")
         Set<String> procedureExcludes;
 
         @Override
