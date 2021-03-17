@@ -20,7 +20,7 @@ import java.sql.SQLOutput;
 
 @AllArgsConstructor
 @Builder
-@Generated(value = "TODO", date = "${now?iso_utc}")
+@Generated(value = "com.tyutyutyu.oo4j.core.generator.Oo4jCodeGenerator", date = "${now?iso_utc}")
 @Getter
 @NoArgsConstructor
 @ToString

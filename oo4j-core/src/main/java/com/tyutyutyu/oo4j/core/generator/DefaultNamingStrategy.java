@@ -1,4 +1,4 @@
-package com.tyutyutyu.oo4j.core;
+package com.tyutyutyu.oo4j.core.generator;
 
 import com.google.common.base.CaseFormat;
 import com.tyutyutyu.oo4j.core.query.OracleBasicType;
@@ -27,6 +27,11 @@ public class DefaultNamingStrategy implements NamingStrategy {
     }
 
     @Override
+    public String getBasePackage() {
+        return basePackage;
+    }
+
+    @Override
     public String getTypePackage(String schema) {
         return String.format("%s.%s.type", basePackage, scheamToPackageName(schema));
     }
@@ -40,7 +45,7 @@ public class DefaultNamingStrategy implements NamingStrategy {
         String overloadMark = oracleProcedure.getOverload() != null
                 ? String.valueOf(oracleProcedure.getOverload())
                 : "";
-        return "PACKAGE".equals(oracleProcedure.getObjectType())
+        return oracleProcedure.getType() == OracleProcedure.Type.IN_PACKAGE
                 ? oracleTypeNameToJavaClassName(oracleProcedure.getObjectName() + "_" + oracleProcedure.getProcedureName()) + overloadMark
                 : oracleTypeNameToJavaClassName(oracleProcedure.getObjectName());
     }

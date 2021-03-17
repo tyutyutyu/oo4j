@@ -14,7 +14,7 @@ public class SqlReturnTypeFactory {
 
     private static final Map<Class<?>, SqlDataSqlReturnType> SQL_DATA_CLASS_CACHE = new ConcurrentHashMap<>();
 
-    static <T> SqlDataSqlReturnType createForSqlData(Class<T> clazz) {
+    public static <T> SqlDataSqlReturnType createForSqlData(Class<T> clazz) {
         return SQL_DATA_CLASS_CACHE.computeIfAbsent(
                 clazz,
                 SqlDataSqlReturnType::new
@@ -22,7 +22,7 @@ public class SqlReturnTypeFactory {
     }
 
     @RequiredArgsConstructor
-    static class SqlDataSqlReturnType implements SqlReturnType {
+    public static class SqlDataSqlReturnType implements SqlReturnType {
 
         private final Class<?> sqlTypeClass;
 

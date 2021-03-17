@@ -1,12 +1,9 @@
 package com.tyutyutyu.oo4j.core.query;
 
-import com.tyutyutyu.oo4j.core.NamingStrategy;
+import com.tyutyutyu.oo4j.core.generator.NamingStrategy;
 import com.tyutyutyu.oo4j.core.javalang.JavaClass;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-
-import javax.sql.rowset.RowSetMetaDataImpl;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -14,16 +11,18 @@ public class OracleDataTypeMapper {
 
     private final NamingStrategy namingStrategy;
 
-    public JavaClass oracleDataTypeToJavaClass(OracleType oracleType, String schema) {
+    public JavaClass oracleDataTypeToJavaClass(OracleType oracleType) {
 
-        log.trace("oracleDataTypeToJavaClass - oracleType: {}, schema: {}, ", oracleType, schema);
+        log.trace("oracleDataTypeToJavaClass - oracleType: {}", oracleType);
 
         if (oracleType instanceof OracleBasicType) {
             return ((OracleBasicType) oracleType).getJavaClass();
+        } else if (oracleType instanceof OracleCursorType) {
+            return JavaClass.listOf(null);
         } else if (oracleType instanceof OracleComplexType) {
             if (oracleType instanceof OracleObjectType) {
                 return new JavaClass(
-                        namingStrategy.getTypePackage(schema),
+                        namingStrategy.getTypePackage(((OracleObjectType) oracleType).getSchema()),
                         namingStrategy.oracleTypeNameToJavaClassName(oracleType.getName()),
                         false,
                         null,
@@ -32,15 +31,15 @@ public class OracleDataTypeMapper {
                         "Object"
                 );
             } else if (oracleType instanceof OracleTableType) {
-                String typePackage = namingStrategy.getTypePackage(schema);
+                String typePackage = namingStrategy.getTypePackage(((OracleTableType) oracleType).getSchema());
                 JavaClass componentJavaClass;
-                if (OracleType.isBasicType(((OracleTableType) oracleType).getComponentTypeName())) {
-                    componentJavaClass = OracleBasicType.valueOf(((OracleTableType) oracleType).getComponentTypeName()).getJavaClass();
+                if (OracleType.isBasicType(((OracleTableType) oracleType).getComponentType().getName())) {
+                    componentJavaClass = OracleBasicType.valueOf(((OracleTableType) oracleType).getComponentType().getName()).getJavaClass();
                 } else {
                     componentJavaClass = new JavaClass(
                             typePackage,
                             namingStrategy.oracleTypeNameToJavaClassName(
-                                    ((OracleTableType) oracleType).getComponentTypeName()
+                                    ((OracleTableType) oracleType).getComponentType().getName()
                             ),
                             false,
                             null,
@@ -58,25 +57,13 @@ public class OracleDataTypeMapper {
                         JavaClass.ContainerType.LIST,
                         "Array"
                 );
-            } else if (oracleType instanceof OracleCursorType) {
-                return JavaClass.listOf(null);
+
             } else {
-                throw new IllegalStateException("Unknown OracleComplexType");
+                throw new IllegalStateException("Unknown OracleComplexType, oracleType=" + oracleType);
             }
         } else {
-            throw new IllegalStateException("Unknown OracleType");
+            throw new IllegalStateException("Unknown OracleType, oracleType=" + oracleType);
         }
-    }
-
-    @SneakyThrows
-    private String toJavaType(String oracleType) {
-
-        Integer vendorTypeNumber = oracle.jdbc.OracleType.valueOf(oracleType).getVendorTypeNumber();
-
-        RowSetMetaDataImpl metaData = new RowSetMetaDataImpl();
-        metaData.setColumnCount(1);
-        metaData.setColumnType(1, vendorTypeNumber);
-        return metaData.getColumnClassName(1);
     }
 
 }

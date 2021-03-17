@@ -1,6 +1,6 @@
 package com.tyutyutyu.oo4j.core.query;
 
-import lombok.*;
+import lombok.Value;
 
 @Value
 public class OracleTypeField {

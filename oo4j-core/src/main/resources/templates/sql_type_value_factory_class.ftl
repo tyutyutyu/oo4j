@@ -17,7 +17,7 @@ public class SqlTypeValueFactory {
 
     private static final Map<Class<?>, ArraySqlTypeValue<?>> ARRAY_CLASS_CACHE = new ConcurrentHashMap<>();
 
-    static <T> ArraySqlTypeValue<T> createForArray(Class<T> clazz, List<T> list) {
+    public static <T> ArraySqlTypeValue<T> createForArray(Class<T> clazz, List<T> list) {
         return (ArraySqlTypeValue<T>) ARRAY_CLASS_CACHE.computeIfAbsent(
                 clazz,
                 aClazz -> new ArraySqlTypeValue<>(aClazz, list.toArray(Object[]::new))
@@ -25,7 +25,7 @@ public class SqlTypeValueFactory {
     }
 
     @RequiredArgsConstructor
-    static class ArraySqlTypeValue<T> implements SqlTypeValue {
+    public static class ArraySqlTypeValue<T> implements SqlTypeValue {
 
         private final Class<?> sqlTypeClass;
         private final T[] javaArray;

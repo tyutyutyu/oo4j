@@ -1,4 +1,4 @@
-package com.tyutyutyu.oo4j.core;
+package com.tyutyutyu.oo4j.core.query;
 
 public class NoPrivilegeException extends RuntimeException {
 

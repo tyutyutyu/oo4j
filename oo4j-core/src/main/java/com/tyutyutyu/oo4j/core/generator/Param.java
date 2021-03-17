@@ -1,4 +1,4 @@
-package com.tyutyutyu.oo4j.core;
+package com.tyutyutyu.oo4j.core.generator;
 
 import com.tyutyutyu.oo4j.core.javalang.JavaClass;
 import lombok.Getter;
@@ -16,7 +16,6 @@ public class Param {
     private final String jdbcType;
     private final boolean custom;
     private final String rowMapperType;
-    private final String oracleTypeName;
     private final String genericType;
 
     public String getDeclarationType() {
@@ -31,5 +30,8 @@ public class Param {
         }
     }
 
+    public boolean isListType() {
+        return javaClass.isContainer() && javaClass.getContainerType() == JavaClass.ContainerType.LIST;
+    }
 
 }

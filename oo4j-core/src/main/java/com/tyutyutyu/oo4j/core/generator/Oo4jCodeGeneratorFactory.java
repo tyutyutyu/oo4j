@@ -1,7 +1,5 @@
 package com.tyutyutyu.oo4j.core.generator;
 
-import com.tyutyutyu.oo4j.core.DefaultNamingStrategy;
-import com.tyutyutyu.oo4j.core.NamingStrategy;
 import com.tyutyutyu.oo4j.core.result.FileSourceWriter;
 import com.tyutyutyu.oo4j.core.template.FreemarkerApi;
 import lombok.SneakyThrows;

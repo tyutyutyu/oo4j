@@ -1,11 +1,16 @@
 <#assign now = .now>
 package ${packageName};
 
+<#list imports as import>
+import ${import};
+</#list>
+
+
 import jakarta.annotation.Generated;
 
 import java.util.List;
 
-@Generated(value = "TODO", date = "${now?iso_utc}")
+@Generated(value = "com.tyutyutyu.oo4j.core.generator.Oo4jCodeGenerator", date = "${now?iso_utc}")
 public interface ${className} {
 
     String SQL_TYPE_NAME = "${schema}.${typeName}";

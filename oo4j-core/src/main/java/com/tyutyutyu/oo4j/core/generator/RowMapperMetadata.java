@@ -3,12 +3,11 @@ package com.tyutyutyu.oo4j.core.generator;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-import java.util.List;
-
 @Getter
 @RequiredArgsConstructor
-public class GenerateProcedureResult {
+public class RowMapperMetadata {
 
-    private final List<String> oracleTypes;
+    private final String type;
+    private final String name;
 
 }

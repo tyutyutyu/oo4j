@@ -1,6 +1,6 @@
 package com.tyutyutyu.oo4j.core.query;
 
-import com.tyutyutyu.oo4j.core.NamingStrategy;
+import com.tyutyutyu.oo4j.core.generator.NamingStrategy;
 import com.tyutyutyu.oo4j.core.javalang.JavaClass;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.InstanceOfAssertFactories.CLASS;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -37,7 +36,7 @@ class OracleDataTypeMapperTest {
         when(namingStrategy.oracleTypeNameToJavaClassName(any())).thenReturn("MyType");
 
         // when
-        JavaClass actual = oracleDataTypeMapper.oracleDataTypeToJavaClass(givenOracleType, null);
+        JavaClass actual = oracleDataTypeMapper.oracleDataTypeToJavaClass(givenOracleType);
 
         // then
         assertThat(actual).isEqualTo(expectedJavaType);
@@ -64,7 +63,7 @@ class OracleDataTypeMapperTest {
                         "Object"
                 )),
                 Arguments.of(new OracleCursorType(), JavaClass.listOf(null)),
-                Arguments.of(new OracleTableType("MY_SCHEMA", "T_TYPE_TAB", "T_TYPE"),
+                Arguments.of(new OracleTableType("MY_SCHEMA", "T_TYPE_TAB", new OracleObjectType("OO4J", "T_TYPE", List.of())),
                         new JavaClass(
                                 "basepackage.testschema",
                                 "MyType",

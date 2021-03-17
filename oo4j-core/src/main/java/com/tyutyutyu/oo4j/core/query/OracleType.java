@@ -7,8 +7,6 @@ public interface OracleType {
 
     String getName();
 
-    String getFullyQualifiedName();
-
     JDBCType getJdbcType();
 
     static boolean isBasicType(String typeName) {
@@ -23,10 +21,10 @@ public interface OracleType {
             return OracleBasicType.class;
         } else if ("OBJECT".equals(typeCode)) {
             return OracleObjectType.class;
-        } else if ("REF CURSOR".equals(dataType)) {
-            return OracleCursorType.class;
         } else if ("COLLECTION".equals(typeCode)) {
             return OracleTableType.class;
+        } else if ("REF CURSOR".equals(dataType)) {
+            return OracleCursorType.class;
         } else {
             throw new IllegalStateException(String.format("TODO, typeCode: %s, dataType: %s", typeCode, dataType));
         }

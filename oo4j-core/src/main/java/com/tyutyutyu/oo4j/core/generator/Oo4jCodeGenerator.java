@@ -1,12 +1,8 @@
 package com.tyutyutyu.oo4j.core.generator;
 
-import com.tyutyutyu.oo4j.core.NamingStrategy;
-import com.tyutyutyu.oo4j.core.ProcedureMetadataMapper;
-import com.tyutyutyu.oo4j.core.TypeMetadataMapper;
-import com.tyutyutyu.oo4j.core.query.MetadataQuery;
-import com.tyutyutyu.oo4j.core.query.OracleDataTypeMapper;
-import com.tyutyutyu.oo4j.core.query.OracleType;
+import com.tyutyutyu.oo4j.core.query.*;
 import com.tyutyutyu.oo4j.core.result.SourceWriter;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 
 import javax.sql.DataSource;
@@ -15,13 +11,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+@Slf4j
 public class Oo4jCodeGenerator {
 
     private final String basePackage;
     private final MetadataQuery metadataQuery;
-    private final TypeGenerator typeGenerator;
     private final ProcedureMetadataMapper procedureMetadataMapper;
     private final SourceWriter sourceWriter;
+    private final TypeMetadataMapper typeMetadataMapper;
 
     public Oo4jCodeGenerator(
             String basePackage,
@@ -31,26 +28,32 @@ public class Oo4jCodeGenerator {
     ) {
         this.basePackage = basePackage;
         OracleDataTypeMapper oracleDataTypeMapper = new OracleDataTypeMapper(namingStrategy);
-        this.procedureMetadataMapper = new ProcedureMetadataMapper(namingStrategy, oracleDataTypeMapper);
+        this.procedureMetadataMapper = new ProcedureMetadataMapper(
+                namingStrategy,
+                oracleDataTypeMapper,
+                new ParamMapper(namingStrategy, oracleDataTypeMapper)
+        );
         this.sourceWriter = sourceWriter;
         NamedParameterJdbcTemplate jdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
         metadataQuery = new MetadataQuery(jdbcTemplate);
-        typeGenerator = new TypeGenerator(new TypeMetadataMapper(namingStrategy, oracleDataTypeMapper));
+        typeMetadataMapper = new TypeMetadataMapper(namingStrategy, oracleDataTypeMapper);
     }
 
     public void generate(Collection<String> schemas, Collection<String> typeExcludes, Collection<String> procedureExcludes) {
 
-        Map<String, OracleType> typesMap = metadataQuery.queryTypes(schemas);
+        log.debug("generate - schemas: {}, typeExcludes: {}, procedureExcludes: {}", schemas, typeExcludes, procedureExcludes);
+
+        Map<String, OracleType> typesMap = metadataQuery.queryTypes(schemas, typeExcludes);
         typesMap = typesMap
                 .entrySet()
                 .stream()
                 .filter(e -> !typeExcludes.contains(e.getKey()))
                 .collect(Collectors.toUnmodifiableMap(Map.Entry::getKey, Map.Entry::getValue));
 
-        List<JavaTypeModel> typeModels = typeGenerator.generateObjectTypes(typesMap.values());
+        List<JavaType> typeModels = generateObjectTypes(typesMap.values());
         typeModels.forEach(sourceWriter::writeType);
 
-        List<JavaTableTypeModel> tableTypeModels = typeGenerator.generateTableTypes(typesMap.values());
+        List<JavaTableTypeModel> tableTypeModels = generateTableTypes(typesMap.values());
         tableTypeModels.forEach(sourceWriter::writeTableType);
 
         metadataQuery.queryProcedures(schemas, typesMap)
@@ -65,6 +68,24 @@ public class Oo4jCodeGenerator {
     private void generateHelperClasses() {
         sourceWriter.writeSqlReturnTypeFactory(basePackage);
         sourceWriter.writeSqlTypeValueFactory(basePackage);
+    }
+
+    private List<JavaType> generateObjectTypes(Collection<OracleType> types) {
+        return types
+                .stream()
+                .filter(OracleObjectType.class::isInstance)
+                .map(OracleObjectType.class::cast)
+                .map(typeMetadataMapper::toJavaTypeMetadata)
+                .collect(Collectors.toUnmodifiableList());
+    }
+
+    private List<JavaTableTypeModel> generateTableTypes(Collection<OracleType> types) {
+        return types
+                .stream()
+                .filter(OracleTableType.class::isInstance)
+                .map(OracleTableType.class::cast)
+                .map(typeMetadataMapper::toJavaTableTypeMetadata)
+                .collect(Collectors.toUnmodifiableList());
     }
 
 }

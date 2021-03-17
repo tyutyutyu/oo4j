@@ -1,6 +1,5 @@
 package com.tyutyutyu.oo4j.core.query;
 
-import com.tyutyutyu.oo4j.core.NoPrivilegeException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -10,6 +9,8 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import static com.tyutyutyu.oo4j.core.query.OracleProcedure.Type.*;
+
 @RequiredArgsConstructor
 @Slf4j
 public class MetadataQuery {
@@ -18,7 +19,7 @@ public class MetadataQuery {
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
 
-    public Map<String, OracleType> queryTypes(Collection<String> schemas) {
+    public Map<String, OracleType> queryTypes(Collection<String> schemas, Collection<String> typeExcludes) {
 
         log.debug("queryType - schemas: {}", schemas);
 
@@ -26,10 +27,10 @@ public class MetadataQuery {
                 OWNERS_KEY, schemas
         );
 
-        List<TypesQueryResult> queryResults = jdbcTemplate.query(
+        List<AllTypesExtended> allTypesExtendedRows = jdbcTemplate.query(
                 SqlFactory.sql(SqlFactory.Sql.TYPES),
                 new MapSqlParameterSource(parameters),
-                (rs, rowNum) -> new TypesQueryResult(
+                (rs, rowNum) -> new AllTypesExtended(
                         rs.getString(1),
                         rs.getString(2),
                         rs.getString(3),
@@ -39,23 +40,33 @@ public class MetadataQuery {
                 )
         );
 
-        Collection<List<TypesQueryResult>> temp = queryResults
+        allTypesExtendedRows = allTypesExtendedRows
+                .stream()
+                .filter(row -> !typeExcludes.contains(row.getOwner() + "." + row.getTypeName()))
+                .collect(Collectors.toUnmodifiableList());
+
+        Collection<List<AllTypesExtended>> temp = allTypesExtendedRows
                 .stream()
                 .collect(Collectors.groupingBy(r -> r.getOwner() + "." + r.getTypeName()))
-                .values();
+                .values()
+                .stream()
+                .sorted((a, b) -> b.get(0).getTypeCode().compareTo(a.get(0).getTypeCode()))
+                .collect(Collectors.toUnmodifiableList());
 
         Map<String, OracleType> result = new HashMap<>();
-        for (List<TypesQueryResult> list : temp) {
+        for (List<AllTypesExtended> list : temp) {
             OracleType oracleType = finisher(result).apply(list);
-            result.put(oracleType.getFullyQualifiedName(), oracleType);
+            if (oracleType instanceof OracleComplexType) {
+                result.put(((OracleComplexType) oracleType).getFullyQualifiedName(), oracleType);
+            }
         }
 
         return result;
     }
 
-    private Function<List<TypesQueryResult>, OracleType> finisher(Map<String, OracleType> accumulator) {
+    private Function<List<AllTypesExtended>, OracleType> finisher(Map<String, OracleType> accumulator) {
         return typesQueryResults -> {
-            TypesQueryResult first = typesQueryResults.get(0);
+            AllTypesExtended first = typesQueryResults.get(0);
 
             return getType(first.getOwner(), first.getTypeCode(), first.getTypeName(), typesQueryResults, accumulator);
         };
@@ -65,7 +76,7 @@ public class MetadataQuery {
             String schema,
             String typeCode,
             String typeName,
-            List<TypesQueryResult> typesQueryResults,
+            List<AllTypesExtended> allTypesExtendedRows,
             Map<String, OracleType> accumulator
     ) {
         if (accumulator.containsKey(schema + "." + typeName)) {
@@ -80,10 +91,10 @@ public class MetadataQuery {
             type = new OracleObjectType(
                     schema,
                     typeName,
-                    getObjectTypeAttributes(schema, typeName, typesQueryResults, accumulator)
+                    getObjectTypeAttributes(schema, typeName, allTypesExtendedRows, accumulator)
             );
         } else if (fieldType == OracleTableType.class) {
-            type = queryTableType(schema, typeName, typesQueryResults);
+            type = createTableType(schema, typeName, allTypesExtendedRows, accumulator);
         } else if (fieldType == OracleCursorType.class) {
             type = new OracleCursorType();
         } else {
@@ -95,44 +106,56 @@ public class MetadataQuery {
     private List<OracleTypeField> getObjectTypeAttributes(
             String schema,
             String typeName,
-            List<TypesQueryResult> typesQueryResults,
+            List<AllTypesExtended> allTypesExtendedRows,
             Map<String, OracleType> accumulator
     ) {
-        return typesQueryResults
+        return allTypesExtendedRows
                 .stream()
-                .filter(typesQueryResult -> typesQueryResult.getOwner().equals(schema)
-                        && typesQueryResult.getTypeName().equals(typeName))
-                .map(typesQueryResult -> new OracleTypeField(
-                        typesQueryResult.getAttrName(),
+                .filter(allTypesExtended -> allTypesExtended.getOwner().equals(schema)
+                        && allTypesExtended.getTypeName().equals(typeName))
+                .map(allTypesExtended -> new OracleTypeField(
+                        allTypesExtended.getAttrName(),
                         getType(
-                                typesQueryResult.getOwner(),
-                                typesQueryResult.getTypeCode(),
-                                typesQueryResult.getAttrTypeName(),
-                                typesQueryResults,
+                                allTypesExtended.getOwner(),
+                                allTypesExtended.getTypeCode(),
+                                allTypesExtended.getAttrTypeName(),
+                                allTypesExtendedRows,
                                 accumulator)
                 ))
                 .collect(Collectors.toUnmodifiableList());
     }
 
-    private OracleTableType queryTableType(String schema, String typeName, List<TypesQueryResult> typesQueryResults) {
+    private OracleTableType createTableType(String schema, String typeName, List<AllTypesExtended> allTypesExtendedRows, Map<String, OracleType> accumulator) {
 
         log.debug("queryTableType - schema: {}, typeName: {}", schema, typeName);
 
-        return typesQueryResults
+        return allTypesExtendedRows
                 .stream()
-                .filter(typesQueryResult -> typesQueryResult.getOwner().equals(schema)
-                        && typesQueryResult.getTypeName().equals(typeName))
+                .filter(allTypesExtended -> allTypesExtended.getOwner().equals(schema)
+                        && allTypesExtended.getTypeName().equals(typeName))
                 .findAny()
-                .map(TypesQueryResult::getElemTypeName)
-                .map(elemTypeName -> new OracleTableType(schema, typeName, elemTypeName))
+                .map(AllTypesExtended::getElemTypeName)
+                .map(elemTypeName -> new OracleTableType(
+                        schema,
+                        typeName,
+                        getTypeX(schema, elemTypeName, accumulator)
+                ))
                 .orElseThrow(() ->
                         new NoPrivilegeException(
                                 String.format(
-                                        "The database user has no privilege to query information about %s.%s from ALL_COLL_TYPES.",
+                                        "The database user has no privilege to query information about %s.%s type from ALL_COLL_TYPES.",
                                         schema, typeName
                                 )
                         )
                 );
+    }
+
+    private static OracleType getTypeX(String schema, String typeName, Map<String, OracleType> accumulator) {
+        if (OracleType.isBasicType(typeName)) {
+            return OracleBasicType.valueOf(typeName);
+        }
+
+        return accumulator.get(schema + "." + typeName);
     }
 
     public List<OracleProcedure> queryProcedures(Collection<String> schemas, Map<String, OracleType> typesMap) {
@@ -151,10 +174,9 @@ public class MetadataQuery {
                         rs.getString(2),
                         rs.getString(3),
                         rs.getString(4),
-                        rs.getInt(5),
-                        rs.getObject(6) == null
+                        rs.getObject(5) == null
                                 ? null
-                                : rs.getInt(6)
+                                : rs.getInt(5)
                 )
         );
 
@@ -167,7 +189,7 @@ public class MetadataQuery {
 
         Map<String, Object> parameters = Map.of(OWNERS_KEY, schemas);
 
-        List<AllArguments> queryResult = jdbcTemplate.query(
+        List<AllArguments> allArgumentsRows = jdbcTemplate.query(
                 SqlFactory.sql(SqlFactory.Sql.ARGUMENTS),
                 new MapSqlParameterSource(parameters),
                 (rs, rowNum) -> new AllArguments(
@@ -190,16 +212,15 @@ public class MetadataQuery {
                                 allProcedureRow.getOwner(),
                                 allProcedureRow.getObjectName(),
                                 allProcedureRow.getProcedureName(),
-                                allProcedureRow.getObjectType(),
-                                allProcedureRow.getSubprogramId(),
+                                allProcedureRow.getObjectType().equals("PACKAGE") ? IN_PACKAGE : STANDALONE,
                                 allProcedureRow.getOverload(),
-                                map4(allProcedureRow, queryResult, typesMap)
+                                mapProcedureFields(allProcedureRow, allArgumentsRows, typesMap)
                         )
                 )
                 .collect(Collectors.toUnmodifiableList());
     }
 
-    private List<OracleProcedureField> map4(AllProcedures allProcedureRow, List<AllArguments> queryResult, Map<String, OracleType> typesMap) {
+    private List<OracleProcedureField> mapProcedureFields(AllProcedures allProcedureRow, List<AllArguments> queryResult, Map<String, OracleType> typesMap) {
         return queryResult
                 .stream()
                 .filter(allArgumentsRow -> "PROCEDURE".equals(allProcedureRow.getObjectType())
@@ -216,7 +237,14 @@ public class MetadataQuery {
 
     private Function<AllArguments, OracleProcedureField> mapProcedureField(Map<String, OracleType> typesMap) {
         return allArgumentsRow -> {
-            OracleType type = typesMap.get(allArgumentsRow.getOwner() + "." + allArgumentsRow.getTypeName());
+            OracleType type;
+            if (allArgumentsRow.getTypeName() == null && OracleType.isBasicType(allArgumentsRow.getDataType())) {
+                type = OracleBasicType.valueOf(allArgumentsRow.getDataType());
+            } else if ("REF CURSOR".equals(allArgumentsRow.getDataType())) {
+                type = new OracleCursorType();
+            } else {
+                type = typesMap.get(allArgumentsRow.getOwner() + "." + allArgumentsRow.getTypeName());
+            }
 
             return new OracleProcedureField(
                     allArgumentsRow.getArgumentName(),

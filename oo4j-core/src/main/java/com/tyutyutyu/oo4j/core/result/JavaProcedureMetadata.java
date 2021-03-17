@@ -1,7 +1,7 @@
 package com.tyutyutyu.oo4j.core.result;
 
-import com.tyutyutyu.oo4j.core.Param;
-import com.tyutyutyu.oo4j.core.RowMapperMetadata;
+import com.tyutyutyu.oo4j.core.generator.Param;
+import com.tyutyutyu.oo4j.core.generator.RowMapperMetadata;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;

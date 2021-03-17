@@ -1,4 +1,4 @@
-package com.tyutyutyu.oo4j.core;
+package com.tyutyutyu.oo4j.core.generator;
 
 import com.tyutyutyu.oo4j.core.javalang.JavaClass;
 import lombok.Getter;

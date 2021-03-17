@@ -1,9 +1,13 @@
 package com.tyutyutyu.oo4j.core;
 
+import com.tyutyutyu.oo4j.core.generator.DefaultNamingStrategy;
+import com.tyutyutyu.oo4j.core.generator.NamingStrategy;
 import com.tyutyutyu.oo4j.core.query.OracleProcedure;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import static com.tyutyutyu.oo4j.core.query.OracleProcedure.Type.IN_PACKAGE;
+import static com.tyutyutyu.oo4j.core.query.OracleProcedure.Type.STANDALONE;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class DefaultNamingStrategyTest {
@@ -75,7 +79,7 @@ class DefaultNamingStrategyTest {
         // given
         String basePackage = "a.b.c";
         NamingStrategy namingStrategy = new DefaultNamingStrategy(basePackage);
-        OracleProcedure oracleProcedure = new OracleProcedure(null, "SOME_PACKAGE", "SOME_PROCEDURE", "PACKAGE", 1, null, null);
+        OracleProcedure oracleProcedure = new OracleProcedure(null, "SOME_PACKAGE", "SOME_PROCEDURE", IN_PACKAGE, null, null);
 
         // when
         String actual = namingStrategy.getProcedureClassName(oracleProcedure);
@@ -91,7 +95,7 @@ class DefaultNamingStrategyTest {
         // given
         String basePackage = "a.b.c";
         NamingStrategy namingStrategy = new DefaultNamingStrategy(basePackage);
-        OracleProcedure oracleProcedure = new OracleProcedure(null, "SOME_PACKAGE", "SOME_PROCEDURE", "PACKAGE", 1, 1, null);
+        OracleProcedure oracleProcedure = new OracleProcedure(null, "SOME_PACKAGE", "SOME_PROCEDURE", IN_PACKAGE, 1, null);
 
         // when
         String actual = namingStrategy.getProcedureClassName(oracleProcedure);
@@ -107,7 +111,7 @@ class DefaultNamingStrategyTest {
         // given
         String basePackage = "a.b.c";
         NamingStrategy namingStrategy = new DefaultNamingStrategy(basePackage);
-        OracleProcedure oracleProcedure = new OracleProcedure(null, "SOME_PROCEDURE", null, null, 1, null, null);
+        OracleProcedure oracleProcedure = new OracleProcedure(null, null, "SOME_PROCEDURE", STANDALONE, null, null);
 
         // when
         String actual = namingStrategy.getProcedureClassName(oracleProcedure);

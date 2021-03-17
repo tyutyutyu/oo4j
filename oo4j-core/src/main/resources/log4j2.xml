@@ -6,7 +6,7 @@
         </Console>
     </Appenders>
     <Loggers>
-        <Logger name="com.tyutyutyu" level="debug"/>
+        <Logger name="com.tyutyutyu" level="warn"/>
 
         <Logger name="org.junit" level="warn"/>
         <Logger name="org.junit.vintage.engine.discovery" level="error"/>

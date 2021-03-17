@@ -1,6 +1,5 @@
 package com.tyutyutyu.oo4j.core.generator;
 
-import com.tyutyutyu.oo4j.core.JavaTypeField;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
@@ -10,7 +9,7 @@ import java.util.List;
 @Getter
 @RequiredArgsConstructor
 @ToString
-public class JavaTypeModel {
+public class JavaType {
 
     private final String packageName;
     private final List<String> imports;

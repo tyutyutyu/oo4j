@@ -1,7 +1,7 @@
 package com.tyutyutyu.oo4j.core.result;
 
 import com.tyutyutyu.oo4j.core.generator.JavaTableTypeModel;
-import com.tyutyutyu.oo4j.core.generator.JavaTypeModel;
+import com.tyutyutyu.oo4j.core.generator.JavaType;
 import com.tyutyutyu.oo4j.core.template.FreemarkerApi;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -20,13 +20,13 @@ public class FileSourceWriter implements SourceWriter {
 
     @SneakyThrows
     @Override
-    public void writeType(JavaTypeModel javaTypeModel) {
+    public void writeType(JavaType javaType) {
 
-        String classSource = freemarkerApi.generate("sql_data_type_class", javaTypeModel);
+        String classSource = freemarkerApi.generate("sql_data_type_class", javaType);
 
         write(
-                javaTypeModel.getPackageName(),
-                javaTypeModel.getClassName(),
+                javaType.getPackageName(),
+                javaType.getClassName(),
                 classSource
         );
     }

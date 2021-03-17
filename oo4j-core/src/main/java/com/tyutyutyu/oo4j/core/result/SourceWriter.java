@@ -1,11 +1,11 @@
 package com.tyutyutyu.oo4j.core.result;
 
 import com.tyutyutyu.oo4j.core.generator.JavaTableTypeModel;
-import com.tyutyutyu.oo4j.core.generator.JavaTypeModel;
+import com.tyutyutyu.oo4j.core.generator.JavaType;
 
 public interface SourceWriter {
 
-    void writeType(JavaTypeModel javaTypeModel);
+    void writeType(JavaType javaType);
 
     void writeTableType(JavaTableTypeModel javaTableTypeModel);
 

@@ -10,16 +10,16 @@ import java.util.stream.Stream;
 import static com.tyutyutyu.oo4j.core.query.OracleBasicType.VARCHAR2;
 import static org.assertj.core.api.Assertions.assertThat;
 
-class JavaClassUtilsTest {
+class ToImportListFunctionTest {
 
     @MethodSource("testToImportListSource")
     @ParameterizedTest
-    void testToImportList(Stream<JavaClass> javaClassStream, List<String> expected) {
+    void testToImportList(List<JavaClass> javaClasses, List<String> expected) {
 
         // given
 
         // when
-        List<String> actual = JavaClassUtils.toImportList(javaClassStream);
+        List<String> actual = new ToImportListFunction().apply(javaClasses);
 
         // then
         assertThat(actual).containsExactly(expected.toArray(String[]::new));
@@ -27,9 +27,9 @@ class JavaClassUtilsTest {
 
     private static Stream<Arguments> testToImportListSource() {
         return Stream.of(
-                Arguments.of(Stream.of(VARCHAR2.getJavaClass()), List.of()),
-                Arguments.of(Stream.of(JavaClass.listOf(null)), List.of("java.util.List")),
-                Arguments.of(Stream.of(jc("a.b.c", "MyClass", false)), List.of("a.b.c.MyClass"))
+                Arguments.of(List.of(VARCHAR2.getJavaClass()), List.of()),
+                Arguments.of(List.of(JavaClass.listOf(VARCHAR2.getJavaClass())), List.of("java.util.List")),
+                Arguments.of(List.of(jc("a.b.c", "MyClass", false)), List.of("a.b.c.MyClass"))
         );
     }
 

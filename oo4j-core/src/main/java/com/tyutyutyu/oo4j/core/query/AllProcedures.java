@@ -9,7 +9,6 @@ public class AllProcedures {
     String objectName;
     String procedureName;
     String objectType;
-    int subprogramId;
     Integer overload;
 
 }

@@ -1,22 +1,25 @@
 package com.tyutyutyu.oo4j.core.query;
 
-import lombok.*;
+import lombok.Value;
 
 import java.util.List;
 
 @Value
 public class OracleProcedure {
 
+    public enum Type {
+        IN_PACKAGE, STANDALONE
+    }
+
     String schema;
     String objectName;
     String procedureName;
-    String objectType;
-    int subprogramId;
+    Type type;
     Integer overload;
     List<OracleProcedureField> fields;
 
     public String getName() {
-        return "PACKAGE".equals(objectType)
+        return type == Type.IN_PACKAGE
                 ? objectName + "." + procedureName
                 : objectName;
     }

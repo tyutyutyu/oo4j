@@ -1,6 +1,6 @@
 package com.tyutyutyu.oo4j.core.query;
 
-import lombok.*;
+import lombok.Value;
 
 import java.sql.JDBCType;
 
@@ -9,15 +9,11 @@ public class OracleTableType implements OracleComplexType {
 
     String schema;
     String name;
-    String componentTypeName;
+    OracleType componentType;
 
     @Override
     public JDBCType getJdbcType() {
         return JDBCType.ARRAY;
     }
 
-    @Override
-    public String getFullyQualifiedName() {
-        return schema + "." + name;
-    }
 }

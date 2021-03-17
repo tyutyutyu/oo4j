@@ -2,14 +2,12 @@ package com.tyutyutyu.oo4j.core;
 
 import com.tyutyutyu.oo4j.core.generator.Oo4jCodeGenerator;
 import com.tyutyutyu.oo4j.core.generator.Oo4jCodeGeneratorFactory;
-import org.springframework.util.StringUtils;
 import picocli.CommandLine;
 import picocli.CommandLine.Option;
 
 import java.nio.file.Path;
-import java.util.*;
+import java.util.Set;
 import java.util.concurrent.Callable;
-import java.util.stream.Collectors;
 
 public class Oo4jCli {
 
@@ -26,7 +24,7 @@ public class Oo4jCli {
                 Path.of(command.targetDir)
         );
         oo4jCodeGenerator.generate(
-                command.schema,
+                command.schemas,
                 command.typeExcludes,
                 command.procedureExcludes
         );
@@ -49,8 +47,8 @@ public class Oo4jCli {
         @Option(names = {"-o", "--target-directory"}, description = "Target directory")
         String targetDir;
 
-        @Option(names = {"-s", "--schema"}, description = "Schema list (comma separated)", split = ",", required = true)
-        Set<String> schema;
+        @Option(names = {"-s", "--schemas"}, description = "Schema list (comma separated)", split = ",", required = true)
+        Set<String> schemas;
 
         @Option(names = {"-t", "--exclude-types"}, description = "Types to exclude (e.g. \"SCHEMA1.TYPE1,SCHEMA2.TYPE2\")", split = ",", defaultValue = "")
         Set<String> typeExcludes;

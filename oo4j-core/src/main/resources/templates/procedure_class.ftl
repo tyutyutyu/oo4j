@@ -14,29 +14,36 @@ import org.springframework.jdbc.core.SqlInOutParameter;
 import org.springframework.jdbc.core.SqlParameter;
 import org.springframework.jdbc.object.GenericStoredProcedure;
 import org.springframework.jdbc.object.StoredProcedure;
+import org.springframework.transaction.support.TransactionTemplate;
+import org.springframework.util.Assert;
 
+import javax.annotation.Nullable;
 import javax.sql.DataSource;
 import java.sql.Types;
 import java.util.Map;
 
-@Generated(value = "TODO", date = "${now?iso_utc}")
+@Generated(value = "com.tyutyutyu.oo4j.core.generator.Oo4jCodeGenerator", date = "${now?iso_utc}")
 public class ${className}<#if rowMappers?size != 0><<#list rowMappers as rowMapper>${rowMapper.type}<#if rowMapper?has_next>, </#if></#list>></#if> {
 
     private static final String SQL = "${sql}";
 
     private final StoredProcedure storedProcedure = new GenericStoredProcedure();
+    private final TransactionTemplate transactionTemplate;
 
     public ${className}(
-        DataSource dataSource<#list rowMappers as rowMapper>,
+        DataSource dataSource,
+        @Nullable TransactionTemplate transactionTemplate<#list rowMappers as rowMapper>,
         RowMapper<${rowMapper.type}> ${rowMapper.name}RowMapper<#if rowMapper?has_next><#rt></#if></#list>
     ) {
+        this.transactionTemplate = transactionTemplate;
+
         storedProcedure.setDataSource(dataSource);
         storedProcedure.setSql(SQL);
 
         <#list inParams as param>
         <#if param.custom>
         storedProcedure.declareParameter(new SqlParameter("${param.name}", Types.${param.jdbcType}, ${param.javaClass.className}.SQL_TYPE_NAME));
-        <#elseif param.javaClass.container>
+        <#elseif param.listType>
         storedProcedure.declareParameter(new SqlParameter("${param.name}", Types.${param.jdbcType}, ${param.javaClass.className}.SQL_TYPE_NAME));
         <#else>
         storedProcedure.declareParameter(new SqlParameter("${param.name}", Types.${param.jdbcType}));
@@ -48,7 +55,7 @@ public class ${className}<#if rowMappers?size != 0><<#list rowMappers as rowMapp
         storedProcedure.declareParameter(new SqlInOutParameter("${param.name}", Types.${param.jdbcType}, ${param.javaClass.className}.SQL_TYPE_NAME, ${param.javaClass.className}.SQL_RETURN_TYPE));
         <#elseif param.rowMapperType??>
         storedProcedure.declareParameter(new SqlOutParameter("${param.name}", Types.${param.jdbcType}, ${param.javaName}RowMapper));
-        <#elseif param.javaClass.container>
+        <#elseif param.listType>
         storedProcedure.declareParameter(new SqlInOutParameter("${param.name}", Types.${param.jdbcType}, ${param.javaClass.className}.SQL_TYPE_NAME));
         <#else>
         storedProcedure.declareParameter(new SqlInOutParameter("${param.name}", Types.${param.jdbcType}));
@@ -79,7 +86,7 @@ public class ${className}<#if rowMappers?size != 0><<#list rowMappers as rowMapp
 
         Map<String, Object> results = storedProcedure.execute(
             <#list inParams as param>
-            <#if param.javaClass.container>
+            <#if param.listType>
             ${param.javaClass.className}.createSqlTypeValue(${param.javaName})<#rt>
             <#else>
             ${param.javaName}<#rt>
@@ -87,7 +94,7 @@ public class ${className}<#if rowMappers?size != 0><<#list rowMappers as rowMapp
             <#if param?has_next || inOutParams?size != 0><#lt>,</#if>
             </#list>
             <#list inOutParams as param>
-            <#if param.javaClass.container>
+            <#if param.listType>
             ${param.javaClass.className}.createSqlTypeValue(${param.javaName})<#rt>
             <#else>
             ${param.javaName}<#rt>
@@ -104,6 +111,28 @@ public class ${className}<#if rowMappers?size != 0><<#list rowMappers as rowMapp
             (${param.declarationType}) results.get("${param.name}")<#if param?has_next>,</#if>
             </#list>
         );
+    }
+
+    public Out callInTransaction(
+            <#list inParams as param>
+            ${param.declarationType} ${param.javaName}<#if param?has_next || inOutParams?size != 0>,</#if>
+            </#list>
+            <#list inOutParams as param>
+            ${param.declarationType} ${param.javaName}<#if param?has_next>,</#if>
+            </#list>
+    ) {
+        Assert.notNull(transactionTemplate, "TransactionTemplate must not be null");
+
+        return transactionTemplate.execute(status -> call(
+                <#list inParams as param>
+                ${param.javaName}<#rt>
+                <#if param?has_next || inOutParams?size != 0><#lt>,</#if>
+                </#list>
+                <#list inOutParams as param>
+                ${param.javaName}<#rt>
+                <#if param?has_next><#lt>,</#if>
+                </#list>
+        ));
     }
 
     @Getter
