@@ -1,6 +1,6 @@
 plugins {
     id("io.freefair.lombok") version "5.3.0"
-    jacoco
+    id("jacoco")
     id("application")
     id("java-library")
 //    id("maven-publish")
@@ -38,8 +38,8 @@ dependencies {
 
 tasks.test {
     useJUnitPlatform()
-
     maxHeapSize = "1G"
+    finalizedBy(tasks.jacocoTestReport)
 }
 
 tasks.jacocoTestReport {
@@ -74,4 +74,11 @@ val fatJar = task("fatJar", type = Jar::class) {
     }
     from(configurations.runtimeClasspath.get().map({ if (it.isDirectory) it else zipTree(it) }))
     with(tasks.jar.get() as CopySpec)
+}
+
+sonarqube {
+    properties {
+        property("sonar.junit.reportPaths", "build/test-results/test/")
+        property("sonar.coverage.jacoco.xmlReportPaths", "build/reports/jacoco/test/")
+    }
 }
