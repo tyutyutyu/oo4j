@@ -22,7 +22,7 @@
         <ojdbc10.version>19.10.0.0</ojdbc10.version>
         <slf4j.version>1.7.30</slf4j.version>
         <spring.version>5.3.5</spring.version>
-        <testcontainers.version>1.15.1</testcontainers.version>
+        <testcontainers.version>1.15.2</testcontainers.version>
     </properties>
 
     <dependencyManagement>
