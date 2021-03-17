@@ -111,7 +111,7 @@ class DefaultNamingStrategyTest {
         // given
         String basePackage = "a.b.c";
         NamingStrategy namingStrategy = new DefaultNamingStrategy(basePackage);
-        OracleProcedure oracleProcedure = new OracleProcedure(null, null, "SOME_PROCEDURE", STANDALONE, null, null);
+        OracleProcedure oracleProcedure = new OracleProcedure(null, "SOME_PROCEDURE", null, STANDALONE, null, null);
 
         // when
         String actual = namingStrategy.getProcedureClassName(oracleProcedure);

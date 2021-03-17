@@ -9,11 +9,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -35,9 +33,10 @@ class MetadataQueryIT {
 
         // given
         List<String> schemas = List.of("OO4J");
+        Collection<String> typeExcludes = List.of();
 
         // when
-        Map<String, OracleType> actual = metadataQuery.queryTypes(schemas);
+        Map<String, OracleType> actual = metadataQuery.queryTypes(schemas, typeExcludes);
 
         // then
         assertThat(actual).containsOnlyKeys("OO4J.T_SIMPLE_TYPE", "OO4J.T_TEST_TYPE", "OO4J.T_TEST_TYPE_TABLE");
@@ -49,9 +48,10 @@ class MetadataQueryIT {
 
         // given
         List<String> schemas = List.of("OO4J");
+        Collection<String> typeExcludes = List.of();
 
         // when
-        Map<String, OracleType> actual = metadataQuery.queryTypes(schemas);
+        Map<String, OracleType> actual = metadataQuery.queryTypes(schemas, typeExcludes);
 
         // then
         System.err.println("actual: " + actual);
@@ -113,7 +113,8 @@ class MetadataQueryIT {
 
         // given
         List<String> schemas = List.of("OO4J");
-        Map<String, OracleType> typesMap = metadataQuery.queryTypes(schemas);
+        Collection<String> typeExcludes = List.of();
+        Map<String, OracleType> typesMap = metadataQuery.queryTypes(schemas, typeExcludes);
 
         // when
         List<OracleProcedure> actual = metadataQuery.queryProcedures(schemas, typesMap);
