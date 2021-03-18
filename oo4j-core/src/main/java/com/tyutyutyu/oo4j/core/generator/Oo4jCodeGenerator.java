@@ -30,7 +30,6 @@ public class Oo4jCodeGenerator {
         OracleDataTypeMapper oracleDataTypeMapper = new OracleDataTypeMapper(namingStrategy);
         this.procedureMetadataMapper = new ProcedureMetadataMapper(
                 namingStrategy,
-                oracleDataTypeMapper,
                 new ParamMapper(namingStrategy, oracleDataTypeMapper)
         );
         this.sourceWriter = sourceWriter;

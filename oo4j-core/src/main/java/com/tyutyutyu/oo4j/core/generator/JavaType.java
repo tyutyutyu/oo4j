@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
+import java.util.Collection;
 import java.util.List;
 
 @Getter
@@ -12,10 +13,10 @@ import java.util.List;
 public class JavaType {
 
     private final String packageName;
-    private final List<String> imports;
+    private final Collection<String> imports;
     private final String className;
     private final String schema;
     private final String typeName;
-    private final List<JavaTypeField> fields;
+    private final Collection<JavaTypeField> fields;
 
 }

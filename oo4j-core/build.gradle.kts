@@ -79,6 +79,5 @@ val fatJar = task("fatJar", type = Jar::class) {
 sonarqube {
     properties {
         property("sonar.junit.reportPaths", "build/test-results/test/")
-        property("sonar.coverage.jacoco.xmlReportPaths", "build/reports/jacoco/test/")
     }
 }
