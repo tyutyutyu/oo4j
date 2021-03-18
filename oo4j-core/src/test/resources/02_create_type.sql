@@ -1,4 +1,8 @@
-CREATE TYPE OO4J.T_TEST_TYPE AS OBJECT (
+CREATE OR REPLACE TYPE OO4J.T_SIMPLE_TYPE AS OBJECT (
+    test_varchar2      VARCHAR2(5)
+);
+
+CREATE OR REPLACE TYPE OO4J.T_TEST_TYPE AS OBJECT (
     test_varchar2      VARCHAR2(5),
     test_char          CHAR(5),
     test_clob          CLOB,
@@ -6,6 +10,8 @@ CREATE TYPE OO4J.T_TEST_TYPE AS OBJECT (
     test_float         FLOAT(5),
     test_date          DATE,
     test_timestamp     TIMESTAMP,
-    test_raw           RAW(5),
-    test_blob          BLOB
+    test_blob          BLOB,
+    test_simple_type   OO4J.T_SIMPLE_TYPE
 );
+
+CREATE OR REPLACE TYPE OO4J.T_TEST_TYPE_TABLE AS TABLE OF OO4J.T_TEST_TYPE;

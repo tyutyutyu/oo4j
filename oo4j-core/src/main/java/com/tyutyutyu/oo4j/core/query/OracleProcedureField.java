@@ -10,8 +10,7 @@ import lombok.ToString;
 public class OracleProcedureField {
 
     private final String name;
-    private final String dataType;
     private final String inOut;
-    private final String typeName;
+    private final OracleType type;
 
 }

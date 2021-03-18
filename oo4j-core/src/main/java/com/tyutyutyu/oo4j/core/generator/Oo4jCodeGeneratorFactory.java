@@ -1,13 +1,10 @@
 package com.tyutyutyu.oo4j.core.generator;
 
-import com.tyutyutyu.oo4j.core.DefaultNamingStrategy;
-import com.tyutyutyu.oo4j.core.NamingStrategy;
 import com.tyutyutyu.oo4j.core.result.FileSourceWriter;
 import com.tyutyutyu.oo4j.core.template.FreemarkerApi;
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
 import oracle.jdbc.driver.OracleDriver;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.datasource.SimpleDriverDataSource;
 
 import javax.sql.DataSource;
@@ -28,12 +25,13 @@ public class Oo4jCodeGeneratorFactory {
         DataSource dataSource = new SimpleDriverDataSource(new OracleDriver(), url, username, password);
         NamingStrategy namingStrategy = new DefaultNamingStrategy(basePackage);
         FileSourceWriter sourceWriter = new FileSourceWriter(
-                new FreemarkerApi(new ClassPathResource("templates/").getFile()),
+                new FreemarkerApi("/templates/", true),
                 targetPath,
                 true
         );
 
         return new Oo4jCodeGenerator(
+                basePackage,
                 dataSource,
                 namingStrategy,
                 sourceWriter

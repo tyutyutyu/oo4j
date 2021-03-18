@@ -6,12 +6,12 @@
         </Console>
     </Appenders>
     <Loggers>
-        <Logger name="com.tyutyutyu" level="debug"/>
+        <Logger name="com.tyutyutyu" level="warn"/>
 
         <Logger name="org.junit" level="warn"/>
         <Logger name="org.junit.vintage.engine.discovery" level="error"/>
-        <Logger name="org.springframework" level="info"/>
-        <Logger name="org.springframework.jdbc" level="trace"/>
+        <Logger name="org.springframework" level="warn"/>
+<!--        <Logger name="org.springframework.jdbc" level="trace"/>-->
         <Logger name="org.testcontainers" level="info"/>
         <Logger name="🐳 [oracleinanutshell/oracle-xe-11g:latest]" level="info"/>
 

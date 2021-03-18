@@ -1,5 +1,5 @@
 <#assign now = .now>
-package ${package};
+package ${packageName};
 
 <#list imports as import>
 import ${import};
@@ -9,88 +9,141 @@ import jakarta.annotation.Generated;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
+import org.springframework.jdbc.core.SqlOutParameter;
+import org.springframework.jdbc.core.SqlInOutParameter;
+import org.springframework.jdbc.core.SqlParameter;
+import org.springframework.jdbc.object.GenericStoredProcedure;
+import org.springframework.jdbc.object.StoredProcedure;
+import org.springframework.transaction.support.TransactionTemplate;
+import org.springframework.util.Assert;
 
+import javax.annotation.Nullable;
 import javax.sql.DataSource;
-import java.sql.CallableStatement;
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.sql.Types;
+import java.util.Map;
 
-@Generated(value = "TODO", date = "${now?iso_utc}")
-public class ${className} {
+@Generated(value = "com.tyutyutyu.oo4j.core.generator.Oo4jCodeGenerator", date = "${now?iso_utc}")
+public class ${className}<#if rowMappers?size != 0><<#list rowMappers as rowMapper>${rowMapper.type}<#if rowMapper?has_next>, </#if></#list>></#if> {
 
     private static final String SQL = "${sql}";
 
-    private final DataSource dataSource;
-    private final Boolean autoCommit;
-    private final String sql;
+    private final StoredProcedure storedProcedure = new GenericStoredProcedure();
+    private final TransactionTemplate transactionTemplate;
 
-    public ${className}(DataSource dataSource) {
-        this(dataSource, null, null);
-    }
+    public ${className}(
+        DataSource dataSource,
+        @Nullable TransactionTemplate transactionTemplate<#list rowMappers as rowMapper>,
+        RowMapper<${rowMapper.type}> ${rowMapper.name}RowMapper<#if rowMapper?has_next><#rt></#if></#list>
+    ) {
+        this.transactionTemplate = transactionTemplate;
 
-    public ${className}(DataSource dataSource) {
-        this(dataSource, null);
-    }
+        storedProcedure.setDataSource(dataSource);
+        storedProcedure.setSql(SQL);
 
-    public ${className}(DataSource dataSource, Boolean autoCommit) {
-        this(dataSource, autoCommit);
-    }
+        <#list inParams as param>
+        <#if param.custom>
+        storedProcedure.declareParameter(new SqlParameter("${param.name}", Types.${param.jdbcType}, ${param.javaClass.className}.SQL_TYPE_NAME));
+        <#elseif param.listType>
+        storedProcedure.declareParameter(new SqlParameter("${param.name}", Types.${param.jdbcType}, ${param.javaClass.className}.SQL_TYPE_NAME));
+        <#else>
+        storedProcedure.declareParameter(new SqlParameter("${param.name}", Types.${param.jdbcType}));
+        </#if>
+        </#list>
 
-    public ${className}(DataSource dataSource, Boolean autoCommit) {
+        <#list inOutParams as param>
+        <#if param.custom>
+        storedProcedure.declareParameter(new SqlInOutParameter("${param.name}", Types.${param.jdbcType}, ${param.javaClass.className}.SQL_TYPE_NAME, ${param.javaClass.className}.SQL_RETURN_TYPE));
+        <#elseif param.rowMapperType??>
+        storedProcedure.declareParameter(new SqlOutParameter("${param.name}", Types.${param.jdbcType}, ${param.javaName}RowMapper));
+        <#elseif param.listType>
+        storedProcedure.declareParameter(new SqlInOutParameter("${param.name}", Types.${param.jdbcType}, ${param.javaClass.className}.SQL_TYPE_NAME));
+        <#else>
+        storedProcedure.declareParameter(new SqlInOutParameter("${param.name}", Types.${param.jdbcType}));
+        </#if>
+        </#list>
 
-        this.dataSource = dataSource;
-        this.autoCommit = autoCommit;
+        <#list outParams as param>
+        <#if param.custom>
+        storedProcedure.declareParameter(new SqlOutParameter("${param.name}", Types.${param.jdbcType}, ${param.javaClass.className}.SQL_TYPE_NAME, ${param.javaClass.className}.SQL_RETURN_TYPE));
+        <#elseif param.rowMapperType??>
+        storedProcedure.declareParameter(new SqlOutParameter("${param.name}", Types.${param.jdbcType}, ${param.javaName}RowMapper));
+        <#else>
+        storedProcedure.declareParameter(new SqlOutParameter("${param.name}", Types.${param.jdbcType}));
+        </#if>
+        </#list>
+
+        storedProcedure.compile();
     }
 
     public Out call(
             <#list inParams as param>
-            ${param.javaSimpleType} ${param.javaName}<#if param?has_next>,</#if>
+            ${param.declarationType} ${param.javaName}<#if param?has_next || inOutParams?size != 0>,</#if>
             </#list>
-    ) throws SQLException {
+            <#list inOutParams as param>
+            ${param.declarationType} ${param.javaName}<#if param?has_next>,</#if>
+            </#list>
+    ) {
 
-        try (Connection connection = getConnection();
-             CallableStatement stmt = connection.prepareCall(SQL)) {
-
+        Map<String, Object> results = storedProcedure.execute(
             <#list inParams as param>
-            stmt.set${param.setterJavaSimpleType}("${param.name}", ${param.javaName});
+            <#if param.listType>
+            ${param.javaClass.className}.createSqlTypeValue(${param.javaName})<#rt>
+            <#else>
+            ${param.javaName}<#rt>
+            </#if>
+            <#if param?has_next || inOutParams?size != 0><#lt>,</#if>
             </#list>
+            <#list inOutParams as param>
+            <#if param.listType>
+            ${param.javaClass.className}.createSqlTypeValue(${param.javaName})<#rt>
+            <#else>
+            ${param.javaName}<#rt>
+            </#if>
+            <#if param?has_next><#lt>,</#if>
+            </#list>
+        );
 
+        return new Out(
+            <#list inOutParams as param>
+            (${param.declarationType}) results.get("${param.name}")<#if param?has_next || outParams?size != 0>,</#if>
+            </#list>
             <#list outParams as param>
-            stmt.registerOutParameter("${param.name}", Types.${param.sqlType});
+            (${param.declarationType}) results.get("${param.name}")<#if param?has_next>,</#if>
             </#list>
-
-            stmt.execute();
-
-            return new Out(
-                    <#list outParams as param>
-                    <#if param.custom>
-                    stmt.get${param.setterJavaSimpleType}("${param.name}", ${param.javaSimpleType}.class)<#if param?has_next>,</#if>
-                    <#else>
-                    stmt.get${param.setterJavaSimpleType}("${param.name}")<#if param?has_next>,</#if>
-                    </#if>
-                    </#list>
-            );
-        }
+        );
     }
 
-    private Connection getConnection() throws SQLException {
-        Connection connection = dataSource.getConnection();
-        if (autoCommit != null) {
-            connection.setAutoCommit(autoCommit);
-        }
-        <#list addToTypeMap as type>
-        connection.getTypeMap().put(${type}.SQL_TYPE_NAME, ${type}.class);
-        </#list>
-        return connection;
+    public Out callInTransaction(
+            <#list inParams as param>
+            ${param.declarationType} ${param.javaName}<#if param?has_next || inOutParams?size != 0>,</#if>
+            </#list>
+            <#list inOutParams as param>
+            ${param.declarationType} ${param.javaName}<#if param?has_next>,</#if>
+            </#list>
+    ) {
+        Assert.notNull(transactionTemplate, "TransactionTemplate must not be null");
+
+        return transactionTemplate.execute(status -> call(
+                <#list inParams as param>
+                ${param.javaName}<#rt>
+                <#if param?has_next || inOutParams?size != 0><#lt>,</#if>
+                </#list>
+                <#list inOutParams as param>
+                ${param.javaName}<#rt>
+                <#if param?has_next><#lt>,</#if>
+                </#list>
+        ));
     }
 
     @Getter
     @RequiredArgsConstructor
     @ToString
-    public static class Out {
+    public class Out {
+        <#list inOutParams as param>
+        private final ${param.declarationType} ${param.javaName};
+        </#list>
         <#list outParams as param>
-        private final ${param.javaSimpleType} ${param.javaName};
+        private final ${param.declarationType} ${param.javaName};
         </#list>
     }
 

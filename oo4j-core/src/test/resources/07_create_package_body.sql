@@ -1,0 +1,18 @@
+CREATE OR REPLACE PACKAGE BODY OO4J.TEST_PACKAGE AS
+
+    PROCEDURE TEST_PROCEDURE2(
+        p_test_varchar2   IN  VARCHAR2,
+        test_varchar2     OUT VARCHAR2
+    ) IS
+    BEGIN
+      NULL;
+    END TEST_PROCEDURE2;
+
+    PROCEDURE TEST_PROCEDURE2(
+        p_test_varchar2   IN  VARCHAR2
+    ) IS
+    BEGIN
+      NULL;
+    END TEST_PROCEDURE2;
+
+END TEST_PACKAGE;

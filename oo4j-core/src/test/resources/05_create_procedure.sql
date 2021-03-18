@@ -6,9 +6,9 @@ CREATE OR REPLACE PROCEDURE OO4J.TEST_PROCEDURE(
     p_test_float      IN  FLOAT,
     p_test_date       IN  DATE,
     p_test_timestamp  IN  TIMESTAMP,
-    p_test_raw        IN  RAW,
     p_test_blob       IN  BLOB,
     p_test_type       IN  OO4J.T_TEST_TYPE,
+    p_test_table_type IN  OO4J.T_TEST_TYPE_TABLE,
     test_varchar2     OUT VARCHAR2,
     test_char         OUT CHAR,
     test_clob         OUT CLOB,
@@ -16,9 +16,9 @@ CREATE OR REPLACE PROCEDURE OO4J.TEST_PROCEDURE(
     test_float        OUT FLOAT,
     test_date         OUT DATE,
     test_timestamp    OUT TIMESTAMP,
-    test_raw          OUT RAW,
     test_blob         OUT BLOB,
-    test_type         OUT OO4J.T_TEST_TYPE
+    test_type         OUT OO4J.T_TEST_TYPE,
+    test_table_type   OUT OO4J.T_TEST_TYPE_TABLE
 ) AS
 BEGIN
   NULL;

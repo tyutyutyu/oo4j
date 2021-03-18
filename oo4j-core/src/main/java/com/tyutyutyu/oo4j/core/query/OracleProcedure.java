@@ -1,17 +1,31 @@
 package com.tyutyutyu.oo4j.core.query;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.ToString;
+import lombok.Value;
 
-@Getter
-@RequiredArgsConstructor
-@ToString
+import java.util.List;
+
+@Value
 public class OracleProcedure {
 
-    private final String schema;
-    private final String objectName;
-    private final String procedureName;
-    private final String objectType;
+    public enum Type {
+        IN_PACKAGE, STANDALONE
+    }
+
+    String schema;
+    String objectName;
+    String procedureName;
+    Type type;
+    Integer overload;
+    List<OracleProcedureField> fields;
+
+    public String getName() {
+        return type == Type.IN_PACKAGE
+                ? objectName + "." + procedureName
+                : objectName;
+    }
+
+    public String getFullyQualifiedName() {
+        return schema + "." + getName();
+    }
 
 }
