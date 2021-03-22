@@ -42,7 +42,11 @@ public class TypeMetadataMapper {
     public JavaTableTypeModel toJavaTableTypeMetadata(OracleTableType oracleTableType) {
 
         String packageName = namingStrategy.getTypePackage(oracleTableType.getSchema());
-        List<String> extraImports = List.of(namingStrategy.getBasePackage() + ".SqlTypeValueFactory");
+        List<String> extraImports = List.of(
+                namingStrategy.getBasePackage() + ".SqlReturnTypeFactory",
+                namingStrategy.getBasePackage() + ".SqlTypeValueFactory",
+                "org.springframework.jdbc.core.SqlReturnType"
+        );
         JavaClass componentClass = oracleDataTypeMapper.oracleDataTypeToJavaClass(oracleTableType.getComponentType());
         Collection<String> imports = List
                 .of(componentClass)
