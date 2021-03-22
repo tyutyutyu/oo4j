@@ -14,6 +14,7 @@ import java.util.List;
 public interface ${className} {
 
     String SQL_TYPE_NAME = "${schema}.${typeName}";
+    SqlReturnType SQL_RETURN_TYPE = SqlReturnTypeFactory.createForArray(HcrfotoType.SQL_TYPE_NAME, HcrfotoType.class);
 
     static SqlTypeValueFactory.ArraySqlTypeValue<${componentClassName}> createSqlTypeValue(List<${componentClassName}> list) {
         return SqlTypeValueFactory.createForArray(${componentClassName}.class, list);
