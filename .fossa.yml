@@ -1,0 +1,17 @@
+version: 2
+
+cli:
+  server: https://app.fossa.com
+  fetcher: custom
+  project: git@github.com:tyutyutyu/oo4j.git
+
+analyze:
+  modules:
+  - name: oo4j-core
+    type: gradle
+    target: 'oo4j-core:'
+    path: .
+  - name: oo4j-platform
+    type: gradle
+    target: 'oo4j-platform:'
+    path: .
