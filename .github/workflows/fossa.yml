@@ -1,4 +1,4 @@
-name: DevSkim
+name: FOSSA
 
 on: [ push ]
 
