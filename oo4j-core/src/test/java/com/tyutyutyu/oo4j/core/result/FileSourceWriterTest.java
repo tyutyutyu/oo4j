@@ -8,10 +8,7 @@ import com.tyutyutyu.oo4j.core.template.FreemarkerApi;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
-import org.mockito.Mockito;
 
-import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 
@@ -63,6 +60,7 @@ class FileSourceWriterTest {
                 List.of(),
                 "TableTypeClass",
                 "",
+                false,
                 "",
                 ""
         );
