@@ -103,23 +103,12 @@ class FileSourceWriterTest {
         String packageName = "r.t.z";
 
         // when
-        fileSourceWriter.writeSqlReturnTypeFactory(packageName);
+        fileSourceWriter.writeCommonClasses(packageName);
 
         // then
         assertThat(tempDir.resolve("r/t/z/SqlReturnTypeFactory.java")).isNotEmptyFile();
-    }
-
-    @Test
-    void testWriteSqlTypeValueFactory() {
-
-        // given
-        String packageName = "g.h.j";
-
-        // when
-        fileSourceWriter.writeSqlTypeValueFactory(packageName);
-
-        // then
-        assertThat(tempDir.resolve("g/h/j/SqlTypeValueFactory.java")).isNotEmptyFile();
+        assertThat(tempDir.resolve("r/t/z/SqlTypeValueFactory.java")).isNotEmptyFile();
+        assertThat(tempDir.resolve("r/t/z/TypeConverter.java")).isNotEmptyFile();
     }
 
 }

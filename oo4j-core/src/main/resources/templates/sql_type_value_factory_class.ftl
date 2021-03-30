@@ -9,19 +9,12 @@ import java.sql.Array;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 @UtilityClass
 public class SqlTypeValueFactory {
 
-    private static final Map<Class<?>, ArraySqlTypeValue<?>> ARRAY_CLASS_CACHE = new ConcurrentHashMap<>();
-
     public static <T> ArraySqlTypeValue<T> createForArray(Class<T> clazz, List<T> list) {
-        return (ArraySqlTypeValue<T>) ARRAY_CLASS_CACHE.computeIfAbsent(
-                clazz,
-                aClazz -> new ArraySqlTypeValue<>(aClazz, list.toArray(Object[]::new))
-        );
+        return new ArraySqlTypeValue<>(clazz, list.toArray((T[]) java.lang.reflect.Array.newInstance(clazz, 0)));
     }
 
     @RequiredArgsConstructor

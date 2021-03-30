@@ -1,21 +1,18 @@
 package com.tyutyutyu.oo4j.core.generator;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.ToString;
+import lombok.Value;
 
 import java.util.Collection;
 
-@Getter
-@RequiredArgsConstructor
-@ToString
+@Value
 public class JavaTableTypeModel {
 
-    private final String packageName;
-    private final Collection<String> imports;
-    private final String className;
-    private final String componentClassName;
-    private final String schema;
-    private final String typeName;
+    String packageName;
+    Collection<String> imports;
+    String className;
+    String componentClassName;
+    boolean customComponentType;
+    String schema;
+    String typeName;
 
 }

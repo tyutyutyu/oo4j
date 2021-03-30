@@ -61,12 +61,11 @@ public class Oo4jCodeGenerator {
                 .map(procedureMetadataMapper::toJavaProcedureMetadata)
                 .forEach(sourceWriter::writeProcedure);
 
-        generateHelperClasses();
+        generateCommonClasses();
     }
 
-    private void generateHelperClasses() {
-        sourceWriter.writeSqlReturnTypeFactory(basePackage);
-        sourceWriter.writeSqlTypeValueFactory(basePackage);
+    private void generateCommonClasses() {
+        sourceWriter.writeCommonClasses(basePackage);
     }
 
     private List<JavaType> generateObjectTypes(Collection<OracleType> types) {
