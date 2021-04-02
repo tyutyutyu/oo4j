@@ -16,8 +16,8 @@ class FreemarkerApiTest {
     void testGenerate() throws IOException {
 
         // given
-        String templateDir = "/test-templates/";
-        FreemarkerApi freemarkerApi = new FreemarkerApi(templateDir, true);
+        String templateDir = "classpath:/test-templates/";
+        FreemarkerApi freemarkerApi = new FreemarkerApi(templateDir);
 
         // when
         String actual = freemarkerApi.generate("test1", Map.of("a", "b"));

@@ -15,12 +15,12 @@ public class FreemarkerApi {
     private final Configuration cfg;
 
     @SneakyThrows
-    public FreemarkerApi(String templateDir, boolean inClasspath) {
+    public FreemarkerApi(String templateDir) {
 
         cfg = new Configuration(Configuration.VERSION_2_3_29);
 
-        if (inClasspath) {
-            cfg.setClassForTemplateLoading(this.getClass(), templateDir);
+        if (templateDir.startsWith("classpath:")) {
+            cfg.setClassForTemplateLoading(this.getClass(), templateDir.replace("classpath:", ""));
         } else {
             cfg.setDirectoryForTemplateLoading(new File(templateDir));
         }

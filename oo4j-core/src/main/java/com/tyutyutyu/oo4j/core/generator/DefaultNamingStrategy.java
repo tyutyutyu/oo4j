@@ -6,6 +6,8 @@ import com.tyutyutyu.oo4j.core.query.OracleProcedure;
 import com.tyutyutyu.oo4j.core.query.OracleType;
 import lombok.RequiredArgsConstructor;
 
+import java.util.Locale;
+
 @RequiredArgsConstructor
 public class DefaultNamingStrategy implements NamingStrategy {
 
@@ -51,7 +53,7 @@ public class DefaultNamingStrategy implements NamingStrategy {
     }
 
     private static String scheamToPackageName(String packageName) {
-        return packageName.toLowerCase().replaceAll(PACKAGE_NAME_REPLACE_REGEX, "");
+        return packageName.toLowerCase(Locale.ENGLISH).replaceAll(PACKAGE_NAME_REPLACE_REGEX, "");
     }
 
 }

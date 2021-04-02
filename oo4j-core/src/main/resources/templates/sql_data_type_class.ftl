@@ -43,6 +43,8 @@ public class ${className} implements SQLData {
         <#list fields as field>
         <#if field.custom>
         this.${field.name} = stream.read${field.javaClass.jdbcAdaptedType}(${field.javaClass.className}.class);
+        <#elseif field.javaClass.jdbcAdaptedType == 'Bytes'>
+        this.${field.name} = TypeConverter.toByteArray(stream.readBlob());
         <#else>
         this.${field.name} = stream.read${field.javaClass.jdbcAdaptedType}();
         </#if>
@@ -52,7 +54,11 @@ public class ${className} implements SQLData {
     @Override
     public void writeSQL(SQLOutput stream) throws SQLException {
         <#list fields as field>
+        <#if field.javaClass.jdbcAdaptedType == 'Bytes'>
+        stream.writeBlob(TypeConverter.toBlob(stream, ${field.name}));
+        <#else>
         stream.write${field.javaClass.jdbcAdaptedType}(${field.name});
+        </#if>
         </#list>
     }
 

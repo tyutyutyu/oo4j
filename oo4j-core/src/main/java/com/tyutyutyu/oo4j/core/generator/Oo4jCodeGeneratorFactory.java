@@ -25,7 +25,7 @@ public class Oo4jCodeGeneratorFactory {
         DataSource dataSource = new SimpleDriverDataSource(new OracleDriver(), url, username, password);
         NamingStrategy namingStrategy = new DefaultNamingStrategy(basePackage);
         FileSourceWriter sourceWriter = new FileSourceWriter(
-                new FreemarkerApi("/templates/", true),
+                new FreemarkerApi("classpath:/templates/"),
                 targetPath,
                 true
         );

@@ -2,13 +2,11 @@ package com.tyutyutyu.oo4j.core.generator;
 
 import com.tyutyutyu.oo4j.core.javalang.ImportCollector;
 import com.tyutyutyu.oo4j.core.javalang.JavaClass;
-import com.tyutyutyu.oo4j.core.query.OracleDataTypeMapper;
-import com.tyutyutyu.oo4j.core.query.OracleObjectType;
-import com.tyutyutyu.oo4j.core.query.OracleTableType;
-import com.tyutyutyu.oo4j.core.query.OracleTypeField;
+import com.tyutyutyu.oo4j.core.query.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.SortedSet;
@@ -60,6 +58,7 @@ public class TypeMetadataMapper {
                 imports,
                 className,
                 componentClassName,
+                !(oracleTableType.getComponentType() instanceof OracleBasicType),
                 oracleTableType.getSchema(),
                 oracleTableType.getName()
         );
@@ -73,7 +72,11 @@ public class TypeMetadataMapper {
     }
 
     private SortedSet<String> getImports(List<JavaTypeField> javaTypeFields) {
-        List<String> extraImports = List.of(namingStrategy.getBasePackage() + ".SqlReturnTypeFactory");
+        List<String> extraImports = new ArrayList<>();
+        extraImports.add(namingStrategy.getBasePackage() + ".SqlReturnTypeFactory");
+        if (javaTypeFields.stream().anyMatch(field -> field.getJavaClass() == JavaClass.BYTE_ARRAY)) {
+            extraImports.add(namingStrategy.getBasePackage() + ".TypeConverter");
+        }
         return javaTypeFields
                 .stream()
                 .map(JavaTypeField::getJavaClass)

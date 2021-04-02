@@ -11,7 +11,5 @@ public interface SourceWriter {
 
     void writeProcedure(JavaProcedureMetadata javaProcedureMetadata);
 
-    void writeSqlReturnTypeFactory(String packageName);
-
-    void writeSqlTypeValueFactory(String packageName);
+    void writeCommonClasses(String packageName);
 }
