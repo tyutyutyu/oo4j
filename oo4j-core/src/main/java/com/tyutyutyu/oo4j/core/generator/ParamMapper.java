@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -18,11 +19,10 @@ class ParamMapper {
     private final NamingStrategy namingStrategy;
     private final OracleDataTypeMapper oracleDataTypeMapper;
 
-    List<Param> toParams(OracleProcedure oracleProcedure, AtomicInteger rowMapperIndex, String inOut) {
+    List<Param> toParams(OracleProcedure oracleProcedure, AtomicInteger rowMapperIndex) {
         return oracleProcedure
                 .getFields()
                 .stream()
-                .filter(oracleProcedureField -> inOut.equals(oracleProcedureField.getInOut()))
                 .map(oracleProcedureField -> getParam(oracleProcedure.getSchema(), oracleProcedureField, rowMapperIndex))
                 .collect(Collectors.toUnmodifiableList());
     }
@@ -46,7 +46,8 @@ class ParamMapper {
                         ? namingStrategy.oracleTypeNameToJavaClassName(
                         ((OracleTableType) oracleProcedureField.getType()).getComponentType().getName()
                 )
-                        : null
+                        : null,
+                oracleProcedureField.getInOut()
         );
     }
 

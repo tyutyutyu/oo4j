@@ -18,6 +18,7 @@ public class JavaProcedureMetadata {
     private final Collection<String> imports;
     private final String className;
     private final String sql;
+    private final Collection<Param> paramsForDeclaration;
     private final Collection<Param> inParams;
     private final Collection<Param> inOutParams;
     private final Collection<Param> outParams;

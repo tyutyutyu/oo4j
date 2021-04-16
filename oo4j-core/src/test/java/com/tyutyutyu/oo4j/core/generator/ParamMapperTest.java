@@ -1,9 +1,9 @@
 package com.tyutyutyu.oo4j.core.generator;
 
-import com.tyutyutyu.oo4j.core.query.OracleBasicType;
 import com.tyutyutyu.oo4j.core.query.OracleDataTypeMapper;
 import com.tyutyutyu.oo4j.core.query.OracleProcedure;
 import com.tyutyutyu.oo4j.core.query.OracleProcedureField;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -15,8 +15,9 @@ import static org.mockito.Mockito.mock;
 
 class ParamMapperTest {
 
+    @DisplayName("Check parameters count")
     @Test
-    void testToParams() {
+    void testToParams1() {
 
         // given
         NamingStrategy namingStrategy = mock(NamingStrategy.class);
@@ -25,8 +26,8 @@ class ParamMapperTest {
 
         OracleProcedure oracleProcedure = new OracleProcedure(
                 "OO4J",
-                "PACKAGE1",
-                "PROCEDURE1",
+                "SOME_PACKAGE",
+                "SOME_PROC_IN_PACKAGE",
                 OracleProcedure.Type.IN_PACKAGE,
                 null,
                 List.of(
@@ -34,13 +35,44 @@ class ParamMapperTest {
                 )
         );
         AtomicInteger rowMapperIndex = new AtomicInteger(0);
-        String inOut = "IN";
 
         // when
-        List<Param> params = paramMapper.toParams(oracleProcedure, rowMapperIndex, inOut);
+        List<Param> params = paramMapper.toParams(oracleProcedure, rowMapperIndex);
 
         // then
         assertThat(params).hasSize(1);
+    }
+
+    @DisplayName("Check parameters order")
+    @Test
+    void testToParams2() {
+
+        // given
+        NamingStrategy namingStrategy = mock(NamingStrategy.class);
+        OracleDataTypeMapper oracleDataTypeMapper = mock(OracleDataTypeMapper.class);
+        ParamMapper paramMapper = new ParamMapper(namingStrategy, oracleDataTypeMapper);
+
+        OracleProcedure oracleProcedure = new OracleProcedure(
+                "OO4J",
+                null,
+                "SOME_PROC",
+                OracleProcedure.Type.IN_PACKAGE,
+                null,
+                List.of(
+                        new OracleProcedureField("param1", "OUT", VARCHAR2),
+                        new OracleProcedureField("param2", "IN/OUT", VARCHAR2),
+                        new OracleProcedureField("param3", "IN", VARCHAR2)
+                )
+        );
+        AtomicInteger rowMapperIndex = new AtomicInteger(0);
+
+        // when
+        List<Param> params = paramMapper.toParams(oracleProcedure, rowMapperIndex);
+
+        // then
+        assertThat(params.get(0).getName()).isEqualTo("param1");
+        assertThat(params.get(1).getName()).isEqualTo("param2");
+        assertThat(params.get(2).getName()).isEqualTo("param3");
     }
 
 }

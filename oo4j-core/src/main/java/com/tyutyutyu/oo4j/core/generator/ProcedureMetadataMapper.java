@@ -26,9 +26,10 @@ public class ProcedureMetadataMapper {
                 oracleProcedure.getFullyQualifiedName());
 
         AtomicInteger rowMapperIndex = new AtomicInteger(0);
-        Collection<Param> inParams = paramMapper.toParams(oracleProcedure, rowMapperIndex, "IN");
-        Collection<Param> inOutParams = paramMapper.toParams(oracleProcedure, rowMapperIndex, "IN/OUT");
-        Collection<Param> outParams = paramMapper.toParams(oracleProcedure, rowMapperIndex, "OUT");
+        Collection<Param> paramsForDeclaration = paramMapper.toParams(oracleProcedure, rowMapperIndex);
+        Collection<Param> inParams = filter(paramsForDeclaration, "IN");
+        Collection<Param> inOutParams = filter(paramsForDeclaration, "IN/OUT");
+        Collection<Param> outParams = filter(paramsForDeclaration, "OUT");
         Collection<RowMapperMetadata> rowMappers = getRowMappers(inOutParams, outParams);
         Collection<String> imports = getImports(inParams, inOutParams, outParams, !rowMappers.isEmpty());
 
@@ -37,11 +38,19 @@ public class ProcedureMetadataMapper {
                 imports,
                 namingStrategy.getProcedureClassName(oracleProcedure),
                 oracleProcedure.getFullyQualifiedName(),
+                paramsForDeclaration,
                 inParams,
                 inOutParams,
                 outParams,
                 rowMappers
         );
+    }
+
+    private Collection<Param> filter(Collection<Param> paramsForDeclaration, String inOut) {
+        return paramsForDeclaration
+                .stream()
+                .filter(param -> param.getOracleInOut().equals(inOut))
+                .collect(Collectors.toUnmodifiableList());
     }
 
     private List<RowMapperMetadata> getRowMappers(Collection<Param> inOutParams, Collection<Param> outParams) {

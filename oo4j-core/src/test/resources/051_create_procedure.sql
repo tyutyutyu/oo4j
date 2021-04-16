@@ -1,3 +1,5 @@
+-- noinspection SqlNoDataSourceInspectionForFile
+
 CREATE OR REPLACE PROCEDURE OO4J.TEST_PROCEDURE(
     p_test_varchar2   IN  VARCHAR2,
     p_test_char       IN  CHAR,
