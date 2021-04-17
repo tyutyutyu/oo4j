@@ -4,17 +4,14 @@ import com.tyutyutyu.oo4j.core.javalang.JavaClass;
 import com.tyutyutyu.oo4j.core.query.OracleBasicType;
 import com.tyutyutyu.oo4j.core.query.OracleDataTypeMapper;
 import com.tyutyutyu.oo4j.core.query.OracleObjectType;
-import com.tyutyutyu.oo4j.core.query.OracleProcedureField;
 import com.tyutyutyu.oo4j.core.query.OracleTypeField;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.*;
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
 class TypeMetadataMapperTest {

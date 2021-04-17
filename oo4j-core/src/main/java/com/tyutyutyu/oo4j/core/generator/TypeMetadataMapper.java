@@ -2,7 +2,10 @@ package com.tyutyutyu.oo4j.core.generator;
 
 import com.tyutyutyu.oo4j.core.javalang.ImportCollector;
 import com.tyutyutyu.oo4j.core.javalang.JavaClass;
-import com.tyutyutyu.oo4j.core.query.*;
+import com.tyutyutyu.oo4j.core.query.OracleBasicType;
+import com.tyutyutyu.oo4j.core.query.OracleDataTypeMapper;
+import com.tyutyutyu.oo4j.core.query.OracleObjectType;
+import com.tyutyutyu.oo4j.core.query.OracleTableType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 

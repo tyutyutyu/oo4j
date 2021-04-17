@@ -1,6 +1,10 @@
 package com.tyutyutyu.oo4j.core.generator;
 
-import com.tyutyutyu.oo4j.core.query.*;
+import com.tyutyutyu.oo4j.core.query.MetadataQuery;
+import com.tyutyutyu.oo4j.core.query.OracleDataTypeMapper;
+import com.tyutyutyu.oo4j.core.query.OracleObjectType;
+import com.tyutyutyu.oo4j.core.query.OracleTableType;
+import com.tyutyutyu.oo4j.core.query.OracleType;
 import com.tyutyutyu.oo4j.core.result.SourceWriter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;

@@ -8,8 +8,8 @@ import java.util.List;
 import java.util.SortedSet;
 import java.util.stream.Stream;
 
-import static com.tyutyutyu.oo4j.core.query.OracleBasicType.VARCHAR2;
-import static org.assertj.core.api.Assertions.assertThat;
+import static com.tyutyutyu.oo4j.core.query.OracleBasicType.*;
+import static org.assertj.core.api.Assertions.*;
 
 class ImportCollectorTest {
 

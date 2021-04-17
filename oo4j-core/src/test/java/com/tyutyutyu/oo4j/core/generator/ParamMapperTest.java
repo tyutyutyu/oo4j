@@ -9,9 +9,9 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static com.tyutyutyu.oo4j.core.query.OracleBasicType.VARCHAR2;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
+import static com.tyutyutyu.oo4j.core.query.OracleBasicType.*;
+import static org.assertj.core.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 class ParamMapperTest {
 

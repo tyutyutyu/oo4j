@@ -1,7 +1,13 @@
 package com.tyutyutyu.oo4j.core.template;
 
 import com.tyutyutyu.oo4j.core.DatabaseIntegrationTestExtension;
-import com.tyutyutyu.oo4j.core.query.*;
+import com.tyutyutyu.oo4j.core.query.MetadataQuery;
+import com.tyutyutyu.oo4j.core.query.OracleBasicType;
+import com.tyutyutyu.oo4j.core.query.OracleObjectType;
+import com.tyutyutyu.oo4j.core.query.OracleProcedure;
+import com.tyutyutyu.oo4j.core.query.OracleProcedureField;
+import com.tyutyutyu.oo4j.core.query.OracleType;
+import com.tyutyutyu.oo4j.core.query.OracleTypeField;
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -13,7 +19,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.*;
 
 @ExtendWith(DatabaseIntegrationTestExtension.class)
 @RequiredArgsConstructor
