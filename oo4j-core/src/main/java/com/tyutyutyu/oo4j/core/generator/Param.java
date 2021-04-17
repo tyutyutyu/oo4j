@@ -17,6 +17,7 @@ public class Param {
     private final boolean custom;
     private final String rowMapperType;
     private final String genericType;
+    private final String oracleInOut;
 
     public String getDeclarationType() {
         if (javaClass.getContainerType() == JavaClass.ContainerType.LIST) {

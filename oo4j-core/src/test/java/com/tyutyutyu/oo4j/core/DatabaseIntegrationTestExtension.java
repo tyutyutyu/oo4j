@@ -2,7 +2,12 @@ package com.tyutyutyu.oo4j.core;
 
 import lombok.SneakyThrows;
 import oracle.jdbc.driver.OracleDriver;
-import org.junit.jupiter.api.extension.*;
+import org.junit.jupiter.api.extension.AfterAllCallback;
+import org.junit.jupiter.api.extension.BeforeAllCallback;
+import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.api.extension.ParameterContext;
+import org.junit.jupiter.api.extension.ParameterResolutionException;
+import org.junit.jupiter.api.extension.ParameterResolver;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -62,7 +67,8 @@ public class DatabaseIntegrationTestExtension implements BeforeAllCallback, Afte
         JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
         loadFile(jdbcTemplate, "01_init_schema.sql", true);
         loadFile(jdbcTemplate, "02_create_type.sql", true);
-        loadFile(jdbcTemplate, "05_create_procedure.sql", false);
+        loadFile(jdbcTemplate, "051_create_procedure.sql", false);
+        loadFile(jdbcTemplate, "052_create_procedure.sql", false);
         loadFile(jdbcTemplate, "06_create_package_spec.sql", false);
         loadFile(jdbcTemplate, "07_create_package_body.sql", false);
     }

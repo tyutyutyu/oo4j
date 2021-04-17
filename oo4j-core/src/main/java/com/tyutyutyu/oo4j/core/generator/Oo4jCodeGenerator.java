@@ -1,6 +1,10 @@
 package com.tyutyutyu.oo4j.core.generator;
 
-import com.tyutyutyu.oo4j.core.query.*;
+import com.tyutyutyu.oo4j.core.query.MetadataQuery;
+import com.tyutyutyu.oo4j.core.query.OracleDataTypeMapper;
+import com.tyutyutyu.oo4j.core.query.OracleObjectType;
+import com.tyutyutyu.oo4j.core.query.OracleTableType;
+import com.tyutyutyu.oo4j.core.query.OracleType;
 import com.tyutyutyu.oo4j.core.result.SourceWriter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -35,7 +39,11 @@ public class Oo4jCodeGenerator {
         this.sourceWriter = sourceWriter;
         NamedParameterJdbcTemplate jdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
         metadataQuery = new MetadataQuery(jdbcTemplate);
-        typeMetadataMapper = new TypeMetadataMapper(namingStrategy, oracleDataTypeMapper);
+        typeMetadataMapper = new TypeMetadataMapper(
+                namingStrategy,
+                oracleDataTypeMapper,
+                new TypeFieldMetadataMapper(namingStrategy, oracleDataTypeMapper)
+        );
     }
 
     public void generate(Collection<String> schemas, Collection<String> typeExcludes, Collection<String> procedureExcludes) {

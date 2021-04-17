@@ -40,38 +40,36 @@ public class ${className}<#if rowMappers?size != 0><<#list rowMappers as rowMapp
         storedProcedure.setDataSource(dataSource);
         storedProcedure.setSql(SQL);
 
-        <#list inParams as param>
-        <#if param.custom>
+        <#list paramsForDeclaration as param>
+            <#if param.oracleInOut == 'IN'>
+                <#if param.custom>
         storedProcedure.declareParameter(new SqlParameter("${param.name}", Types.${param.jdbcType}, ${param.javaClass.className}.SQL_TYPE_NAME));
-        <#elseif param.listType>
+                <#elseif param.listType>
         storedProcedure.declareParameter(new SqlParameter("${param.name}", Types.${param.jdbcType}, ${param.javaClass.className}.SQL_TYPE_NAME));
-        <#else>
+                <#else>
         storedProcedure.declareParameter(new SqlParameter("${param.name}", Types.${param.jdbcType}));
-        </#if>
-        </#list>
-
-        <#list inOutParams as param>
-        <#if param.custom>
+                </#if>
+            <#elseif param.oracleInOut == 'IN/OUT'>
+                <#if param.custom>
         storedProcedure.declareParameter(new SqlInOutParameter("${param.name}", Types.${param.jdbcType}, ${param.javaClass.className}.SQL_TYPE_NAME, ${param.javaClass.className}.SQL_RETURN_TYPE));
-        <#elseif param.rowMapperType??>
+                <#elseif param.rowMapperType??>
         storedProcedure.declareParameter(new SqlOutParameter("${param.name}", Types.${param.jdbcType}, ${param.javaName}RowMapper));
-        <#elseif param.listType>
+                <#elseif param.listType>
         storedProcedure.declareParameter(new SqlInOutParameter("${param.name}", Types.${param.jdbcType}, ${param.javaClass.className}.SQL_TYPE_NAME, ${param.javaClass.className}.SQL_RETURN_TYPE));
-        <#else>
+                <#else>
         storedProcedure.declareParameter(new SqlInOutParameter("${param.name}", Types.${param.jdbcType}));
-        </#if>
-        </#list>
-
-        <#list outParams as param>
-        <#if param.custom>
+                </#if>
+            <#elseif param.oracleInOut == 'OUT'>
+                <#if param.custom>
         storedProcedure.declareParameter(new SqlOutParameter("${param.name}", Types.${param.jdbcType}, ${param.javaClass.className}.SQL_TYPE_NAME, ${param.javaClass.className}.SQL_RETURN_TYPE));
-        <#elseif param.rowMapperType??>
+                <#elseif param.rowMapperType??>
         storedProcedure.declareParameter(new SqlOutParameter("${param.name}", Types.${param.jdbcType}, ${param.javaName}RowMapper));
-        <#elseif param.listType>
+                <#elseif param.listType>
         storedProcedure.declareParameter(new SqlOutParameter("${param.name}", Types.${param.jdbcType}, ${param.javaClass.className}.SQL_TYPE_NAME, ${param.javaClass.className}.SQL_RETURN_TYPE));
-        <#else>
+                <#else>
         storedProcedure.declareParameter(new SqlOutParameter("${param.name}", Types.${param.jdbcType}));
-        </#if>
+                </#if>
+            </#if>
         </#list>
 
         storedProcedure.compile();

@@ -6,9 +6,8 @@ import com.tyutyutyu.oo4j.core.query.OracleProcedure;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import static com.tyutyutyu.oo4j.core.query.OracleProcedure.Type.IN_PACKAGE;
-import static com.tyutyutyu.oo4j.core.query.OracleProcedure.Type.STANDALONE;
-import static org.assertj.core.api.Assertions.assertThat;
+import static com.tyutyutyu.oo4j.core.query.OracleProcedure.Type.*;
+import static org.assertj.core.api.Assertions.*;
 
 class DefaultNamingStrategyTest {
 

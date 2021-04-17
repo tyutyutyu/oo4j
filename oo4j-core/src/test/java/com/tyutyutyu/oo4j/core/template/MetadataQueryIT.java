@@ -1,7 +1,13 @@
 package com.tyutyutyu.oo4j.core.template;
 
 import com.tyutyutyu.oo4j.core.DatabaseIntegrationTestExtension;
-import com.tyutyutyu.oo4j.core.query.*;
+import com.tyutyutyu.oo4j.core.query.MetadataQuery;
+import com.tyutyutyu.oo4j.core.query.OracleBasicType;
+import com.tyutyutyu.oo4j.core.query.OracleObjectType;
+import com.tyutyutyu.oo4j.core.query.OracleProcedure;
+import com.tyutyutyu.oo4j.core.query.OracleProcedureField;
+import com.tyutyutyu.oo4j.core.query.OracleType;
+import com.tyutyutyu.oo4j.core.query.OracleTypeField;
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -13,7 +19,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.*;
 
 @ExtendWith(DatabaseIntegrationTestExtension.class)
 @RequiredArgsConstructor
@@ -98,16 +104,17 @@ class MetadataQueryIT {
         List<OracleProcedure> actual = metadataQuery.queryProcedures(schemas, typesMap);
 
         // then
-        assertThat(actual).hasSize(3);
         assertThat(actual)
                 .map(OracleProcedure::getFullyQualifiedName)
                 .containsExactly(
+                        "OO4J.MIX_ORDER_PARAMS",
                         "OO4J.TEST_PROCEDURE",
                         "OO4J.TEST_PACKAGE.TEST_PROCEDURE2",
                         "OO4J.TEST_PACKAGE.TEST_PROCEDURE2"
                 );
     }
 
+    @DisplayName("Check fields count")
     @Test
     void testQueryProcedureFields1() {
 
@@ -119,8 +126,6 @@ class MetadataQueryIT {
         // when
         List<OracleProcedure> actual = metadataQuery.queryProcedures(schemas, typesMap);
 
-        System.out.println("oracleProcedure: " + actual);
-
         // then
         assertThat(actual
                 .stream()
@@ -130,6 +135,21 @@ class MetadataQueryIT {
                 .getFields()
         )
                 .hasSize(20);
+    }
+
+    @DisplayName("Check fields count with overloaded procedure")
+    @Test
+    void testQueryProcedureFields2() {
+
+        // given
+        List<String> schemas = List.of("OO4J");
+        Collection<String> typeExcludes = List.of();
+        Map<String, OracleType> typesMap = metadataQuery.queryTypes(schemas, typeExcludes);
+
+        // when
+        List<OracleProcedure> actual = metadataQuery.queryProcedures(schemas, typesMap);
+
+        // then
         assertThat(actual
                 .stream()
                 .filter(oracleProcedure ->
@@ -140,7 +160,37 @@ class MetadataQueryIT {
                 .get()
                 .getFields()
         )
-                .hasSize(2);
+                .containsExactly(
+                        new OracleProcedureField("P_TEST_VARCHAR2", "IN", OracleBasicType.VARCHAR2),
+                        new OracleProcedureField("TEST_VARCHAR2", "OUT", OracleBasicType.VARCHAR2)
+                );
+    }
+
+    @DisplayName("Check fields order")
+    @Test
+    void testQueryProcedureFields3() {
+
+        // given
+        List<String> schemas = List.of("OO4J");
+        Collection<String> typeExcludes = List.of();
+        Map<String, OracleType> typesMap = metadataQuery.queryTypes(schemas, typeExcludes);
+
+        // when
+        List<OracleProcedure> actual = metadataQuery.queryProcedures(schemas, typesMap);
+
+        // then
+        assertThat(actual
+                .stream()
+                .filter(oracleProcedure -> oracleProcedure.getFullyQualifiedName().equals("OO4J.MIX_ORDER_PARAMS"))
+                .findAny()
+                .get()
+                .getFields()
+        )
+                .containsExactly(
+                        new OracleProcedureField("OUT1", "OUT", OracleBasicType.VARCHAR2),
+                        new OracleProcedureField("IN1", "IN", OracleBasicType.VARCHAR2),
+                        new OracleProcedureField("INOUT1", "IN/OUT", OracleBasicType.VARCHAR2)
+                );
     }
 
 //    @DisplayName("With overloaded procedure")

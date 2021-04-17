@@ -1,16 +1,12 @@
 package com.tyutyutyu.oo4j.core.query;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.ToString;
+import lombok.Value;
 
-@Getter
-@RequiredArgsConstructor
-@ToString
+@Value
 public class OracleProcedureField {
 
-    private final String name;
-    private final String inOut;
-    private final OracleType type;
+    String name;
+    String inOut;
+    OracleType type;
 
 }

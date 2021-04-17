@@ -2,7 +2,10 @@ package com.tyutyutyu.oo4j.core.generator;
 
 import com.tyutyutyu.oo4j.core.javalang.ImportCollector;
 import com.tyutyutyu.oo4j.core.javalang.JavaClass;
-import com.tyutyutyu.oo4j.core.query.*;
+import com.tyutyutyu.oo4j.core.query.OracleBasicType;
+import com.tyutyutyu.oo4j.core.query.OracleDataTypeMapper;
+import com.tyutyutyu.oo4j.core.query.OracleObjectType;
+import com.tyutyutyu.oo4j.core.query.OracleTableType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -18,6 +21,7 @@ public class TypeMetadataMapper {
 
     private final NamingStrategy namingStrategy;
     private final OracleDataTypeMapper oracleDataTypeMapper;
+    private final TypeFieldMetadataMapper typeFieldMetadataMapper;
 
     public JavaType toJavaTypeMetadata(OracleObjectType oracleObjectType) {
 
@@ -67,7 +71,7 @@ public class TypeMetadataMapper {
     private List<JavaTypeField> getJavaTypeFields(OracleObjectType oracleObjectType) {
         return oracleObjectType.getFields()
                 .stream()
-                .map(this::toJavaTypeField)
+                .map(typeFieldMetadataMapper::toJavaTypeField)
                 .collect(Collectors.toUnmodifiableList());
     }
 
@@ -83,13 +87,4 @@ public class TypeMetadataMapper {
                 .collect(new ImportCollector(extraImports));
     }
 
-    private JavaTypeField toJavaTypeField(OracleTypeField oracleTypeField) {
-        JavaClass javaClass = oracleDataTypeMapper.oracleDataTypeToJavaClass(oracleTypeField.getType());
-        return new JavaTypeField(
-                namingStrategy.oracleAttributeNameToJavaVariableName(oracleTypeField.getName()),
-                javaClass,
-                "Object".equals(javaClass.getJdbcAdaptedType())
-        );
-
-    }
 }

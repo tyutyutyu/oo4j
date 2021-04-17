@@ -40,6 +40,7 @@ tasks.test {
     useJUnitPlatform()
     maxHeapSize = "1G"
     finalizedBy(tasks.jacocoTestReport)
+    testLogging.showStandardStreams = true
 }
 
 tasks.jacocoTestReport {

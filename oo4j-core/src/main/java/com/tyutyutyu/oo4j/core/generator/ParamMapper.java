@@ -1,7 +1,12 @@
 package com.tyutyutyu.oo4j.core.generator;
 
 import com.tyutyutyu.oo4j.core.javalang.JavaClass;
-import com.tyutyutyu.oo4j.core.query.*;
+import com.tyutyutyu.oo4j.core.query.OracleCursorType;
+import com.tyutyutyu.oo4j.core.query.OracleDataTypeMapper;
+import com.tyutyutyu.oo4j.core.query.OracleObjectType;
+import com.tyutyutyu.oo4j.core.query.OracleProcedure;
+import com.tyutyutyu.oo4j.core.query.OracleProcedureField;
+import com.tyutyutyu.oo4j.core.query.OracleTableType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -18,11 +23,10 @@ class ParamMapper {
     private final NamingStrategy namingStrategy;
     private final OracleDataTypeMapper oracleDataTypeMapper;
 
-    List<Param> toParams(OracleProcedure oracleProcedure, AtomicInteger rowMapperIndex, String inOut) {
+    List<Param> toParams(OracleProcedure oracleProcedure, AtomicInteger rowMapperIndex) {
         return oracleProcedure
                 .getFields()
                 .stream()
-                .filter(oracleProcedureField -> inOut.equals(oracleProcedureField.getInOut()))
                 .map(oracleProcedureField -> getParam(oracleProcedure.getSchema(), oracleProcedureField, rowMapperIndex))
                 .collect(Collectors.toUnmodifiableList());
     }
@@ -46,7 +50,8 @@ class ParamMapper {
                         ? namingStrategy.oracleTypeNameToJavaClassName(
                         ((OracleTableType) oracleProcedureField.getType()).getComponentType().getName()
                 )
-                        : null
+                        : null,
+                oracleProcedureField.getInOut()
         );
     }
 

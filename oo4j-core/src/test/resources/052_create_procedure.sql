@@ -1,0 +1,10 @@
+-- noinspection SqlNoDataSourceInspectionForFile
+
+CREATE OR REPLACE PROCEDURE OO4J.MIX_ORDER_PARAMS(
+    out1   OUT    VARCHAR2,
+    in1    IN     VARCHAR2,
+    inout1 IN OUT VARCHAR2
+) AS
+BEGIN
+NULL;
+END MIX_ORDER_PARAMS;
