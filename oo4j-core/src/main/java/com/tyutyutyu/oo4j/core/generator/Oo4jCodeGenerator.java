@@ -35,7 +35,11 @@ public class Oo4jCodeGenerator {
         this.sourceWriter = sourceWriter;
         NamedParameterJdbcTemplate jdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
         metadataQuery = new MetadataQuery(jdbcTemplate);
-        typeMetadataMapper = new TypeMetadataMapper(namingStrategy, oracleDataTypeMapper);
+        typeMetadataMapper = new TypeMetadataMapper(
+                namingStrategy,
+                oracleDataTypeMapper,
+                new TypeFieldMetadataMapper(namingStrategy, oracleDataTypeMapper)
+        );
     }
 
     public void generate(Collection<String> schemas, Collection<String> typeExcludes, Collection<String> procedureExcludes) {

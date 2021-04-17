@@ -18,6 +18,7 @@ public class TypeMetadataMapper {
 
     private final NamingStrategy namingStrategy;
     private final OracleDataTypeMapper oracleDataTypeMapper;
+    private final TypeFieldMetadataMapper typeFieldMetadataMapper;
 
     public JavaType toJavaTypeMetadata(OracleObjectType oracleObjectType) {
 
@@ -67,7 +68,7 @@ public class TypeMetadataMapper {
     private List<JavaTypeField> getJavaTypeFields(OracleObjectType oracleObjectType) {
         return oracleObjectType.getFields()
                 .stream()
-                .map(this::toJavaTypeField)
+                .map(typeFieldMetadataMapper::toJavaTypeField)
                 .collect(Collectors.toUnmodifiableList());
     }
 
@@ -83,13 +84,4 @@ public class TypeMetadataMapper {
                 .collect(new ImportCollector(extraImports));
     }
 
-    private JavaTypeField toJavaTypeField(OracleTypeField oracleTypeField) {
-        JavaClass javaClass = oracleDataTypeMapper.oracleDataTypeToJavaClass(oracleTypeField.getType());
-        return new JavaTypeField(
-                namingStrategy.oracleAttributeNameToJavaVariableName(oracleTypeField.getName()),
-                javaClass,
-                "Object".equals(javaClass.getJdbcAdaptedType())
-        );
-
-    }
 }
