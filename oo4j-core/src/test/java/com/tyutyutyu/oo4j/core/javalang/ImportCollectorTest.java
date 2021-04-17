@@ -32,13 +32,13 @@ class ImportCollectorTest {
         return Stream.of(
                 Arguments.of(List.of(VARCHAR2.getJavaClass()), List.of(), List.of()),
                 Arguments.of(List.of(JavaClass.listOf(VARCHAR2.getJavaClass())), List.of(), List.of("java.util.List")),
-                Arguments.of(List.of(jc("a.b.c", "MyClass", false)), List.of(), List.of("a.b.c.MyClass")),
-                Arguments.of(List.of(jc("d.e.f", "MyClass2", false)), List.of("g.h.i.ExtraClass"), List.of("d.e.f.MyClass2", "g.h.i.ExtraClass"))
+                Arguments.of(List.of(jc("a.b.c", "MyClass")), List.of(), List.of("a.b.c.MyClass")),
+                Arguments.of(List.of(jc("d.e.f", "MyClass2")), List.of("g.h.i.ExtraClass"), List.of("d.e.f.MyClass2", "g.h.i.ExtraClass"))
         );
     }
 
-    private static JavaClass jc(String packageName, String className, boolean primitive) {
-        return new JavaClass(packageName, className, primitive, null, false, null, null);
+    private static JavaClass jc(String packageName, String className) {
+        return new JavaClass(packageName, className, false, null, false, null, null);
     }
 
 }

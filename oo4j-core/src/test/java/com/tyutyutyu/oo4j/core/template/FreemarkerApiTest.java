@@ -13,7 +13,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class FreemarkerApiTest {
 
     @Test
-    void testGenerate() throws IOException {
+    void testGenerate() {
 
         // given
         String templateDir = "classpath:/test-templates/";
