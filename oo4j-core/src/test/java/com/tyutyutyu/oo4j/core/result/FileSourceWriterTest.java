@@ -82,9 +82,6 @@ class FileSourceWriterTest {
                 "ProcedureClass",
                 "",
                 List.of(),
-                List.of(),
-                List.of(),
-                List.of(),
                 List.of()
         );
 

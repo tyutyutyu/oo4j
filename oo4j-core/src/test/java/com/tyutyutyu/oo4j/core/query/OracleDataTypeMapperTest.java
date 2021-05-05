@@ -46,7 +46,7 @@ class OracleDataTypeMapperTest {
                 Arguments.of(OracleBasicType.BLOB, JavaClass.BYTE_ARRAY),
                 Arguments.of(OracleBasicType.CHAR, JavaClass.STRING),
                 Arguments.of(OracleBasicType.CLOB, JavaClass.STRING),
-                Arguments.of(OracleBasicType.DATE, JavaClass.DATE),
+                Arguments.of(OracleBasicType.DATE, JavaClass.TIMESTAMP),
                 Arguments.of(OracleBasicType.FLOAT, JavaClass.DOUBLE),
                 Arguments.of(OracleBasicType.NUMBER, JavaClass.BIG_DECIMAL),
                 Arguments.of(OracleBasicType.RAW, JavaClass.BYTE_ARRAY),

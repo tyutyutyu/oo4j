@@ -7,3 +7,5 @@
 
 ## License
 [![FOSSA Status](https://app.fossa.com/api/projects/custom%2B24197%2Fgithub.com%2Ftyutyutyu%2Foo4j.svg?type=large)](https://app.fossa.com/projects/custom%2B24197%2Fgithub.com%2Ftyutyutyu%2Foo4j?ref=badge_large)
+
+Oracle Date mapping: https://docs.oracle.com/cd/E18283_01/java.112/e16548/apxref.htm#sthref1102

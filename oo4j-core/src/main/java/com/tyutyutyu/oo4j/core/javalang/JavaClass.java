@@ -6,7 +6,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
 import java.math.BigDecimal;
-import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.List;
 
@@ -38,15 +37,6 @@ public class JavaClass {
             "Bytes"
     );
 
-    public static final JavaClass DATE = new JavaClass(
-            Date.class.getPackageName(),
-            Date.class.getSimpleName(),
-            false,
-            null,
-            false,
-            null,
-            "Date"
-    );
     public static final JavaClass DOUBLE = new JavaClass(
             Double.class.getPackageName(),
             Double.class.getSimpleName(),
