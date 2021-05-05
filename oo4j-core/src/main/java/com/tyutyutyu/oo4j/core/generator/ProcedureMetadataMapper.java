@@ -40,13 +40,6 @@ public class ProcedureMetadataMapper {
         );
     }
 
-    private Collection<Param> filter(Collection<Param> paramsForDeclaration, String inOut) {
-        return paramsForDeclaration
-                .stream()
-                .filter(param -> param.getOracleInOut().equals(inOut))
-                .collect(Collectors.toUnmodifiableList());
-    }
-
     private List<RowMapperMetadata> getRowMappers(Collection<Param> allParams) {
         return allParams
                 .stream()
