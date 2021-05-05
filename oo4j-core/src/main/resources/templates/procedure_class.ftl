@@ -40,7 +40,7 @@ public class ${className}<#if rowMappers?size != 0><<#list rowMappers as rowMapp
         storedProcedure.setDataSource(dataSource);
         storedProcedure.setSql(SQL);
 
-        <#list paramsForDeclaration as param>
+        <#list allParams as param>
             <#if param.oracleInOut == 'IN'>
                 <#if param.custom>
         storedProcedure.declareParameter(new SqlParameter("${param.name}", Types.${param.jdbcType}, ${param.javaClass.className}.SQL_TYPE_NAME));
@@ -76,62 +76,40 @@ public class ${className}<#if rowMappers?size != 0><<#list rowMappers as rowMapp
     }
 
     public Out call(
-            <#list inParams as param>
-            ${param.declarationType} ${param.javaName}<#if param?has_next || inOutParams?size != 0>,</#if>
-            </#list>
-            <#list inOutParams as param>
+            <#list inAndInOutParams as param>
             ${param.declarationType} ${param.javaName}<#if param?has_next>,</#if>
             </#list>
     ) {
 
         Map<String, Object> results = storedProcedure.execute(
-            <#list inParams as param>
-            <#if param.listType>
-            ${param.javaClass.className}.createSqlTypeValue(${param.javaName})<#rt>
-            <#else>
-            ${param.javaName}<#rt>
-            </#if>
-            <#if param?has_next || inOutParams?size != 0><#lt>,</#if>
-            </#list>
-            <#list inOutParams as param>
-            <#if param.listType>
-            ${param.javaClass.className}.createSqlTypeValue(${param.javaName})<#rt>
-            <#else>
-            ${param.javaName}<#rt>
-            </#if>
-            <#if param?has_next><#lt>,</#if>
+            <#list inAndInOutParams as param>
+                <#if param.listType>
+        ${param.javaClass.className}.createSqlTypeValue(${param.javaName})<#rt>
+                <#else>
+        ${param.javaName}<#rt>
+                </#if>
+                <#if param?has_next><#lt>,</#if>
             </#list>
         );
 
         return new Out(
-            <#list inOutParams as param>
-            (${param.declarationType}) results.get("${param.name}")<#if param?has_next || outParams?size != 0>,</#if>
-            </#list>
-            <#list outParams as param>
+            <#list inOutAndOutParams as param>
             (${param.declarationType}) results.get("${param.name}")<#if param?has_next>,</#if>
             </#list>
         );
     }
 
     public Out callInTransaction(
-            <#list inParams as param>
-            ${param.declarationType} ${param.javaName}<#if param?has_next || inOutParams?size != 0>,</#if>
-            </#list>
-            <#list inOutParams as param>
+            <#list inAndInOutParams as param>
             ${param.declarationType} ${param.javaName}<#if param?has_next>,</#if>
             </#list>
     ) {
         Assert.notNull(transactionTemplate, "TransactionTemplate must not be null");
 
         return transactionTemplate.execute(status -> call(
-                <#list inParams as param>
-                ${param.javaName}<#rt>
-                <#if param?has_next || inOutParams?size != 0><#lt>,</#if>
-                </#list>
-                <#list inOutParams as param>
-                ${param.javaName}<#rt>
-                <#if param?has_next><#lt>,</#if>
-                </#list>
+            <#list inAndInOutParams as param>
+            ${param.javaName}<#if param?has_next>,</#if>
+            </#list>
         ));
     }
 
@@ -139,10 +117,7 @@ public class ${className}<#if rowMappers?size != 0><<#list rowMappers as rowMapp
     @RequiredArgsConstructor
     @ToString
     public class Out {
-        <#list inOutParams as param>
-        private final ${param.declarationType} ${param.javaName};
-        </#list>
-        <#list outParams as param>
+        <#list inOutAndOutParams as param>
         private final ${param.declarationType} ${param.javaName};
         </#list>
     }

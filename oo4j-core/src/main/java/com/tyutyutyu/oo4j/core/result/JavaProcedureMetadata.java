@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
 import java.util.Collection;
+import java.util.stream.Collectors;
 
 @Getter
 @RequiredArgsConstructor
@@ -17,10 +18,21 @@ public class JavaProcedureMetadata {
     private final Collection<String> imports;
     private final String className;
     private final String sql;
-    private final Collection<Param> paramsForDeclaration;
-    private final Collection<Param> inParams;
-    private final Collection<Param> inOutParams;
-    private final Collection<Param> outParams;
+    private final Collection<Param> allParams;
     private final Collection<RowMapperMetadata> rowMappers;
+
+    public Collection<Param> getInAndInOutParams() {
+        return allParams
+                .stream()
+                .filter(param -> param.getOracleInOut().equals("IN") || param.getOracleInOut().equals("IN/OUT"))
+                .collect(Collectors.toUnmodifiableList());
+    }
+
+    public Collection<Param> getInOutAndOutParams(){
+        return allParams
+                .stream()
+                .filter(param -> param.getOracleInOut().equals("IN/OUT") || param.getOracleInOut().equals("OUT"))
+                .collect(Collectors.toUnmodifiableList());
+    }
 
 }

@@ -49,7 +49,7 @@ tasks.jacocoTestReport {
     reports {
         xml.isEnabled = true
         csv.isEnabled = false
-        html.isEnabled = false
+        html.isEnabled = true
     }
 }
 
@@ -66,10 +66,9 @@ java.sourceCompatibility = JavaVersion.VERSION_11
 //}
 
 val fatJar = task("fatJar", type = Jar::class) {
-//    archiveBaseName.set("${project.name}-fat")
     archiveFileName.set("${project.name}-fat.jar")
     manifest {
-        attributes["Implementation-Title"] = "Gradle Jar File Example"
+        attributes["Implementation-Title"] = "OO4J"
         attributes["Implementation-Version"] = archiveVersion.get()
         attributes["Main-Class"] = "com.tyutyutyu.oo4j.core.Oo4jCli"
     }

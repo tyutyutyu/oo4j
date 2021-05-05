@@ -14,7 +14,7 @@ public enum OracleBasicType implements OracleType {
     BLOB("BLOB", oracle.jdbc.OracleType.BLOB, JDBCType.BLOB, JavaClass.BYTE_ARRAY),
     CHAR("CHAR", oracle.jdbc.OracleType.CHAR, JDBCType.CHAR, JavaClass.STRING),
     CLOB("CLOB", oracle.jdbc.OracleType.CLOB, JDBCType.CLOB, JavaClass.STRING),
-    DATE("DATE", oracle.jdbc.OracleType.DATE, JDBCType.DATE, JavaClass.DATE),
+    DATE("DATE", oracle.jdbc.OracleType.DATE, JDBCType.DATE, JavaClass.TIMESTAMP),
     FLOAT("FLOAT", oracle.jdbc.OracleType.FLOAT, JDBCType.FLOAT, JavaClass.DOUBLE),
     NUMBER("NUMBER", oracle.jdbc.OracleType.NUMBER, JDBCType.NUMERIC, JavaClass.BIG_DECIMAL),
     NVARCHAR2("NVARCHAR2", oracle.jdbc.OracleType.NVARCHAR, JDBCType.NVARCHAR, JavaClass.STRING),
