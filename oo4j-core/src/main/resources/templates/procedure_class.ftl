@@ -56,6 +56,8 @@ public class ${className}<#if rowMappers?size != 0><<#list rowMappers as rowMapp
         storedProcedure.declareParameter(new SqlOutParameter("${param.name}", Types.${param.jdbcType}, ${param.javaName}RowMapper));
                 <#elseif param.listType>
         storedProcedure.declareParameter(new SqlInOutParameter("${param.name}", Types.${param.jdbcType}, ${param.javaClass.className}.SQL_TYPE_NAME, ${param.javaClass.className}.SQL_RETURN_TYPE));
+                <#elseif param.jdbcType == 'BLOB'>
+        storedProcedure.declareParameter(new SqlInOutParameter("${param.name}", Types.${param.jdbcType}, null, SqlReturnTypeFactory.createForBlob()));
                 <#else>
         storedProcedure.declareParameter(new SqlInOutParameter("${param.name}", Types.${param.jdbcType}));
                 </#if>
@@ -66,6 +68,8 @@ public class ${className}<#if rowMappers?size != 0><<#list rowMappers as rowMapp
         storedProcedure.declareParameter(new SqlOutParameter("${param.name}", Types.${param.jdbcType}, ${param.javaName}RowMapper));
                 <#elseif param.listType>
         storedProcedure.declareParameter(new SqlOutParameter("${param.name}", Types.${param.jdbcType}, ${param.javaClass.className}.SQL_TYPE_NAME, ${param.javaClass.className}.SQL_RETURN_TYPE));
+                <#elseif param.jdbcType == 'BLOB'>
+        storedProcedure.declareParameter(new SqlOutParameter("${param.name}", Types.${param.jdbcType}, null, SqlReturnTypeFactory.createForBlob()));
                 <#else>
         storedProcedure.declareParameter(new SqlOutParameter("${param.name}", Types.${param.jdbcType}));
                 </#if>
@@ -82,20 +86,20 @@ public class ${className}<#if rowMappers?size != 0><<#list rowMappers as rowMapp
     ) {
 
         Map<String, Object> results = storedProcedure.execute(
-            <#list inAndInOutParams as param>
-                <#if param.listType>
-        ${param.javaClass.className}.createSqlTypeValue(${param.javaName})<#rt>
-                <#else>
-        ${param.javaName}<#rt>
-                </#if>
-                <#if param?has_next><#lt>,</#if>
-            </#list>
+                <#list inAndInOutParams as param>
+                    <#if param.listType>
+                ${param.javaClass.className}.createSqlTypeValue(${param.javaName})<#rt>
+                    <#else>
+                ${param.javaName}<#rt>
+                    </#if>
+                    <#if param?has_next><#lt>,</#if>
+                </#list>
         );
 
         return new Out(
-            <#list inOutAndOutParams as param>
-            (${param.declarationType}) results.get("${param.name}")<#if param?has_next>,</#if>
-            </#list>
+                <#list inOutAndOutParams as param>
+                (${param.declarationType}) results.get("${param.name}")<#if param?has_next>,</#if>
+                </#list>
         );
     }
 

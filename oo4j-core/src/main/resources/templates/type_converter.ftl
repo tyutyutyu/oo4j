@@ -17,9 +17,9 @@ public class TypeConverter {
         }
 
         try {
-            return blob.getBinaryStream().readAllBytes();
-        } catch (IOException e) {
-            throw new SQLException(e);
+            return blob.getBytes(1, (int) blob.length());
+        } finally {
+            blob.free();
         }
     }
 
