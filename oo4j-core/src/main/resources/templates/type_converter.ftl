@@ -1,13 +1,15 @@
+<#assign now = .now>
 package ${packageName};
 
+import jakarta.annotation.Generated;
 import lombok.experimental.UtilityClass;
 import oracle.sql.OracleSQLOutput;
 
-import java.io.IOException;
 import java.sql.Blob;
 import java.sql.SQLException;
 import java.sql.SQLOutput;
 
+@Generated(value = "com.tyutyutyu.oo4j.core.generator.Oo4jCodeGenerator", date = "${now?iso_utc}")
 @UtilityClass
 public class TypeConverter {
 
