@@ -6,6 +6,7 @@ import com.tyutyutyu.oo4j.core.result.JavaProcedureMetadata;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.SortedSet;
@@ -50,7 +51,14 @@ public class ProcedureMetadataMapper {
     }
 
     private SortedSet<String> getImports(Collection<Param> allParams, boolean addRowMapper) {
-        List<String> extraImports = addRowMapper ? List.of("org.springframework.jdbc.core.RowMapper") : List.of();
+        List<String> extraImports = new ArrayList<>();
+        if (addRowMapper) {
+            extraImports.add("org.springframework.jdbc.core.RowMapper");
+        }
+        if (allParams.stream().anyMatch(param -> param.getJdbcType().equals("BLOB"))) {
+            extraImports.add(namingStrategy.getBasePackage() + ".SqlReturnTypeFactory");
+        }
+
         return allParams
                 .stream()
                 .map(Param::getJavaClass)

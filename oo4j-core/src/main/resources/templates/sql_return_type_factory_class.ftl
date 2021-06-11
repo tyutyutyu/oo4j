@@ -1,5 +1,6 @@
 package ${packageName};
 
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.UtilityClass;
 import org.springframework.jdbc.core.SqlReturnType;
@@ -17,6 +18,7 @@ public class SqlReturnTypeFactory {
 
     private static final Map<String, ArraySqlReturnType<?>> ARRAY_CLASS_CACHE = new ConcurrentHashMap<>();
     private static final Map<Class<?>, SqlDataSqlReturnType> SQL_DATA_CLASS_CACHE = new ConcurrentHashMap<>();
+    private static final BlobToByteArraySqlReturnType BLOB_TO_BYTE_ARRAY_SQL_RETURN_TYPE = new BlobToByteArraySqlReturnType();
 
     public static SqlReturnType createForArray(String componentSqlTypeName, Class<?> componentClass) {
         return ARRAY_CLASS_CACHE.computeIfAbsent(
@@ -25,14 +27,18 @@ public class SqlReturnTypeFactory {
         );
     }
 
-    public static SqlDataSqlReturnType createForSqlData(Class<?> clazz) {
+    public static SqlReturnType createForSqlData(Class<?> clazz) {
         return SQL_DATA_CLASS_CACHE.computeIfAbsent(
                 clazz,
                 SqlDataSqlReturnType::new
         );
     }
 
-    @RequiredArgsConstructor
+    public static SqlReturnType createForBlob() {
+        return BLOB_TO_BYTE_ARRAY_SQL_RETURN_TYPE;
+    }
+
+    @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
     public static class ArraySqlReturnType<T> implements SqlReturnType {
 
         private final String componentSqlTypeName;
@@ -55,7 +61,7 @@ public class SqlReturnTypeFactory {
         }
     }
 
-    @RequiredArgsConstructor
+    @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
     public static class SqlDataSqlReturnType implements SqlReturnType {
 
         private final Class<?> sqlTypeClass;
@@ -64,6 +70,15 @@ public class SqlReturnTypeFactory {
         public Object getTypeValue(CallableStatement cs, int paramIndex, int sqlType, String typeName) throws SQLException {
             cs.getConnection().getTypeMap().put(typeName, sqlTypeClass);
             return cs.getObject(paramIndex);
+        }
+    }
+
+    @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+    public static class BlobToByteArraySqlReturnType implements SqlReturnType {
+
+        @Override
+        public Object getTypeValue(CallableStatement cs, int paramIndex, int sqlType, String typeName) throws SQLException {
+            return TypeConverter.toByteArray(cs.getBlob(paramIndex));
         }
     }
 

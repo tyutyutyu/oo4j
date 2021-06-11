@@ -31,6 +31,7 @@ public class ImportCollector implements Collector<JavaClass, List<String>, Sorte
                         .stream()
                         .filter(ImportCollector::needToImport)
                         .map(JavaClass::getCanonicalName)
+                        .distinct()
                         .collect(Collectors.toList())
         );
     }
