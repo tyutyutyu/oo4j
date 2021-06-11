@@ -10,7 +10,6 @@ import org.springframework.jdbc.core.SqlTypeValue;
 import java.sql.Array;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.sql.Types;
 import java.util.List;
 
 @Generated(value = "com.tyutyutyu.oo4j.core.generator.Oo4jCodeGenerator", date = "${now?iso_utc}")
@@ -30,7 +29,7 @@ public class SqlTypeValueFactory {
         @Override
         public void setTypeValue(PreparedStatement ps, int paramIndex, int sqlType, String typeName) throws SQLException {
             if (list == null) {
-                ps.setNull(paramIndex, Types.ARRAY);
+                        ps.setNull(paramIndex, sqlType, typeName);
             } else {
                 OracleConnection oracleConnection = ps.getConnection().unwrap(OracleConnection.class);
                 oracleConnection.getTypeMap().put(typeName, sqlTypeClass);
