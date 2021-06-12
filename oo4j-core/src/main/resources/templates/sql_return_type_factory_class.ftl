@@ -1,5 +1,7 @@
+<#assign now = .now>
 package ${packageName};
 
+import jakarta.annotation.Generated;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.UtilityClass;
@@ -13,6 +15,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
+@Generated(value = "com.tyutyutyu.oo4j.core.generator.Oo4jCodeGenerator", date = "${now?iso_utc}")
 @UtilityClass
 public class SqlReturnTypeFactory {
 
