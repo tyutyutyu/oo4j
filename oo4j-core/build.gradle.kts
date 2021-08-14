@@ -1,5 +1,5 @@
 plugins {
-    id("io.freefair.lombok") version "5.3.3.3"
+    id("io.freefair.lombok") version "6.1.0"
     id("jacoco")
     id("application")
     id("java-library")
