@@ -1,20 +1,20 @@
 plugins {
-    id("io.freefair.lombok") version "6.1.0"
-    id("jacoco")
-    id("application")
-    id("java-library")
+    id 'io.freefair.lombok' version '6.1.0'
+    id 'jacoco'
+    id 'application'
+    id 'java-library'
 //    id("maven-publish")
-}
-
-repositories {
-    mavenCentral()
 }
 
 group = "com.tyutyutyu.oo4j"
 version = "1.0-SNAPSHOT"
 
+repositories {
+    mavenCentral()
+}
+
 dependencies {
-    api(platform(project(":oo4j-platform")))
+    implementation platform(project(":oo4j-platform"))
 
     implementation("com.google.guava:guava")
     implementation("com.oracle.database.jdbc:ojdbc10")
@@ -47,9 +47,9 @@ tasks.jacocoTestReport {
     dependsOn(tasks.test)
 
     reports {
-        xml.isEnabled = true
-        csv.isEnabled = false
-        html.isEnabled = true
+        xml.required = true
+        csv.required = false
+        html.required = true
     }
 }
 
@@ -65,15 +65,18 @@ java.sourceCompatibility = JavaVersion.VERSION_11
 //    }
 //}
 
-val fatJar = task("fatJar", type = Jar::class) {
+task fatJar(type: Jar) {
     archiveFileName.set("${project.name}-fat.jar")
     manifest {
         attributes["Implementation-Title"] = "OO4J"
         attributes["Implementation-Version"] = archiveVersion.get()
         attributes["Main-Class"] = "com.tyutyutyu.oo4j.core.Oo4jCli"
     }
-    from(configurations.runtimeClasspath.get().map({ if (it.isDirectory) it else zipTree(it) }))
-    with(tasks.jar.get() as CopySpec)
+    from {
+        configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+    with jar
 }
 
 sonarqube {
