@@ -29,7 +29,7 @@ public class DatabaseIntegrationTestExtension implements BeforeAllCallback, Afte
 
         System.setProperty("oracle.jdbc.timezoneAsRegion", "false");
 
-        oracle = new OracleContainer("oracleinanutshell/oracle-xe-11g")
+        oracle = new OracleContainer("gvenzl/oracle-xe")
                 .withStartupTimeoutSeconds(900)
                 .withConnectTimeoutSeconds(900);
         oracle.start();
