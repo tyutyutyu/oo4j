@@ -25,8 +25,8 @@ dependencies {
         api 'org.mockito:mockito-core:3.12.4'
         api 'org.projectlombok:lombok:1.18.22'
         api 'org.slf4j:slf4j-api:1.7.32'
-        api 'org.springframework:spring-core:5.3.11'
-        api 'org.springframework:spring-jdbc:5.3.11'
+        api 'org.springframework:spring-core:5.3.12'
+        api 'org.springframework:spring-jdbc:5.3.12'
         api 'org.testcontainers:oracle-xe:1.16.0'
     }
 }
