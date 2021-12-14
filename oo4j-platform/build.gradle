@@ -17,7 +17,7 @@ dependencies {
         api 'com.oracle.database.nls:orai18n:21.3.0.0'
         api 'info.picocli:picocli:4.6.2'
         api 'info.picocli:picocli-codegen:4.6.2'
-        api 'org.apache.logging.log4j:log4j-slf4j-impl:2.14.1'
+        api 'org.apache.logging.log4j:log4j-slf4j-impl:2.16.0'
         api 'org.assertj:assertj-core:3.21.0'
         api 'org.freemarker:freemarker:2.3.31'
         api 'org.junit.jupiter:junit-jupiter:5.8.2'
