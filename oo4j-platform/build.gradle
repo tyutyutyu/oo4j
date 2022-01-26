@@ -24,7 +24,7 @@ dependencies {
         api 'org.junit.jupiter:junit-jupiter-params:5.8.2'
         api 'org.mockito:mockito-core:4.3.1'
         api 'org.projectlombok:lombok:1.18.22'
-        api 'org.slf4j:slf4j-api:1.7.34'
+        api 'org.slf4j:slf4j-api:1.7.35'
         api 'org.springframework:spring-core:5.3.15'
         api 'org.springframework:spring-jdbc:5.3.15'
         api 'org.testcontainers:oracle-xe:1.16.0'
