@@ -29,13 +29,14 @@ public class DatabaseIntegrationTestExtension implements BeforeAllCallback, Afte
 
         System.setProperty("oracle.jdbc.timezoneAsRegion", "false");
 
-        oracle = new OracleContainer("gvenzl/oracle-xe")
+        oracle = new OracleContainer("gvenzl/oracle-xe:21.3.0-slim")
                 .withStartupTimeoutSeconds(900)
-                .withConnectTimeoutSeconds(900);
+                .withConnectTimeoutSeconds(900)
+                .withEnv("ORACLE_PASSWORD", "test123");
         oracle.start();
         String url = oracle.getJdbcUrl();
-        String user = oracle.getUsername();
-        String pass = oracle.getPassword();
+        String user = "system";
+        String pass = "test123";
         loadTestData(url, user, pass);
 
         DataSource dataSource = new SimpleDriverDataSource(new OracleDriver(), url, "oo4j", "oo4j");
