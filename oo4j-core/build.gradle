@@ -17,7 +17,7 @@ dependencies {
     implementation platform(project(":oo4j-platform"))
 
     implementation("com.google.guava:guava")
-    implementation("com.oracle.database.jdbc:ojdbc10")
+    implementation("com.oracle.database.jdbc:ojdbc11")
     implementation("com.oracle.database.nls:orai18n")
     implementation("org.freemarker:freemarker")
     implementation("org.slf4j:slf4j-api")
@@ -32,7 +32,6 @@ dependencies {
     testImplementation("org.mockito:mockito-core")
     testImplementation("org.testcontainers:oracle-xe")
 
-    compileOnly("org.projectlombok:lombok")
     compileOnly("info.picocli:picocli-codegen")
 }
 
