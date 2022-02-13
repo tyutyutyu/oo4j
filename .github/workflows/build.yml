@@ -30,10 +30,19 @@ jobs:
 
       - name: Build with Gradle
         run: ./gradlew build --info --stacktrace
+
+      - name: Archive test results
+        uses: actions/upload-artifact@v2
+        if: always()
         with:
-          name: test-results
-          path: |
-            oo4j-core/build/reports/tests/**/*
+          name: test-report
+          path: oo4j-core/build/reports/tests/**/*
+
+      - name: Publish Unit Test Results
+        uses: EnricoMi/publish-unit-test-result-action@v1
+        if: always()
+        with:
+          files: oo4j-core/build/reports/tests/**/*.xml
 
       - name: Analyze with Sonarcloud
         env:
