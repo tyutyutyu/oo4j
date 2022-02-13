@@ -30,6 +30,10 @@ jobs:
 
       - name: Build with Gradle
         run: ./gradlew build --stacktrace
+        with:
+          name: test-results
+          path: |
+            oo4j-core/build/reports/tests/**/*
 
       - name: Analyze with Sonarcloud
         env:
