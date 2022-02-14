@@ -43,7 +43,7 @@ tasks.test {
     finalizedBy(tasks.jacocoTestReport)
     testLogging.showStandardStreams = true
     reports {
-        junitXml.enabled = true
+        junitXml.required = true
     }
 }
 
