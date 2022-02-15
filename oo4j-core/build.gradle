@@ -1,5 +1,3 @@
-import javax.xml.datatype.XMLGregorianCalendar
-
 plugins {
     id 'io.freefair.lombok' version '6.3.0'
     id 'jacoco'
@@ -85,6 +83,13 @@ task fatJar(type: Jar) {
 
 sonarqube {
     properties {
+        property("sonar.sourceEncoding", "UTF-8")
+        property("sonar.java.source", "11")
+        property("sonar.java.target", "11")
+        property("sonar.sources", "src/main")
+        property("sonar.tests", "src/test")
+        property("sonar.java.binaries", "build/classes/java/main")
+        property("sonar.java.test.binaries", "build/classes/java/main/test")
         property("sonar.junit.reportPaths", "build/test-results/test/")
         property("sonar.debug", "true")
     }
