@@ -13,7 +13,9 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.datasource.SimpleDriverDataSource;
 import org.springframework.util.StringUtils;
+import org.testcontainers.containers.BindMode;
 import org.testcontainers.containers.OracleContainer;
+import org.testcontainers.utility.MountableFile;
 
 import javax.sql.DataSource;
 import java.io.IOException;
@@ -25,20 +27,22 @@ public class DatabaseIntegrationTestExtension implements BeforeAllCallback, Afte
     private NamedParameterJdbcTemplate jdbcTemplate;
 
     @Override
+    @SneakyThrows
     public void beforeAll(ExtensionContext context) {
 
         System.setProperty("oracle.jdbc.timezoneAsRegion", "false");
 
-        oracle = new OracleContainer("oracleinanutshell/oracle-xe-11g")
+        oracle = new OracleContainer("gvenzl/oracle-xe:21.3.0-slim")
                 .withStartupTimeoutSeconds(900)
-                .withConnectTimeoutSeconds(900);
+                .withConnectTimeoutSeconds(900)
+                .withFileSystemBind(new ClassPathResource("init-db").getFile().getAbsolutePath(), "/container-entrypoint-initdb.d", BindMode.READ_ONLY);
         oracle.start();
-        String url = oracle.getJdbcUrl();
-        String user = oracle.getUsername();
-        String pass = oracle.getPassword();
-        loadTestData(url, user, pass);
 
-        DataSource dataSource = new SimpleDriverDataSource(new OracleDriver(), url, "oo4j", "oo4j");
+        final String logs = oracle.getLogs();
+        System.out.println(logs);
+
+        String url = oracle.getJdbcUrl();
+        DataSource dataSource = new SimpleDriverDataSource(new OracleDriver(), url, "OO4J", "OO4J");
         jdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
     }
 
@@ -46,7 +50,6 @@ public class DatabaseIntegrationTestExtension implements BeforeAllCallback, Afte
     public void afterAll(ExtensionContext context) {
         oracle.stop();
     }
-
 
     @Override
     public boolean supportsParameter(ParameterContext parameterContext, ExtensionContext extensionContext) throws ParameterResolutionException {
@@ -79,7 +82,7 @@ public class DatabaseIntegrationTestExtension implements BeforeAllCallback, Afte
             Arrays.stream(sql.split(";"))
                     .filter(StringUtils::hasText)
                     .forEach(jdbcTemplate::update);
-        }else{
+        } else {
             jdbcTemplate.update(sql);
         }
     }
