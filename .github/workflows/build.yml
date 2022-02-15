@@ -42,7 +42,7 @@ jobs:
         uses: EnricoMi/publish-unit-test-result-action@v1
         if: always()
         with:
-          files: oo4j-core/build/reports/tests/**/*.xml
+          files: oo4j-core/build/test-results/test/**/*.xml
 
       - name: Analyze with Sonarcloud
         env:
