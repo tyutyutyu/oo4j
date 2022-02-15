@@ -86,5 +86,6 @@ task fatJar(type: Jar) {
 sonarqube {
     properties {
         property("sonar.junit.reportPaths", "build/test-results/test/")
+        property("sonar.debug", "true")
     }
 }
