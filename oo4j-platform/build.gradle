@@ -27,7 +27,7 @@ dependencies {
         api 'org.slf4j:slf4j-api:1.7.36'
         api 'org.springframework:spring-core:5.3.19'
         api 'org.springframework:spring-jdbc:5.3.19'
-        api 'org.testcontainers:oracle-xe:1.16.3'
+        api 'org.testcontainers:oracle-xe:1.17.0'
     }
 }
 
