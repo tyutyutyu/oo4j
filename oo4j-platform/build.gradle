@@ -22,7 +22,7 @@ dependencies {
         api 'org.freemarker:freemarker:2.3.31'
         api 'org.junit.jupiter:junit-jupiter:5.8.2'
         api 'org.junit.jupiter:junit-jupiter-params:5.8.2'
-        api 'org.mockito:mockito-core:4.5.1'
+        api 'org.mockito:mockito-core:4.6.0'
         api 'org.projectlombok:lombok:1.18.24'
         api 'org.slf4j:slf4j-api:1.7.36'
         api 'org.springframework:spring-core:5.3.19'
