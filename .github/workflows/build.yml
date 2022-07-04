@@ -39,7 +39,7 @@ jobs:
           path: oo4j-core/build/reports/tests/**/*
 
       - name: Publish Unit Test Results
-        uses: EnricoMi/publish-unit-test-result-action@v1
+        uses: EnricoMi/publish-unit-test-result-action@v2
         if: always()
         with:
           files: oo4j-core/build/test-results/test/**/*.xml
