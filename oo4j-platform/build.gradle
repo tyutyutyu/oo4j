@@ -14,7 +14,7 @@ dependencies {
         api 'commons-httpclient:commons-httpclient:3.1'
         api 'com.google.guava:guava:31.1-jre'
         api 'com.oracle.database.jdbc:ojdbc11:21.6.0.0.1'
-        api 'com.oracle.database.nls:orai18n:21.5.0.0'
+        api 'com.oracle.database.nls:orai18n:21.6.0.0.1'
         api 'info.picocli:picocli:4.6.3'
         api 'info.picocli:picocli-codegen:4.6.3'
         api 'org.apache.logging.log4j:log4j-slf4j-impl:2.18.0'
